@@ -1,3 +1,3 @@
-const FixFormat = require('./src/fix-format');
+const YaixmConverter = require('./src/yaixm-converter');
 
-module.exports = FixFormat;
+module.exports = YaixmConverter;

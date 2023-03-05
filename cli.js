@@ -1,28 +1,22 @@
 #!/usr/bin/env node
 
-const FixFormat = require('./src/fix-format');
+const { YaixmConverter } = require('./src/yaixm-converter');
 const program = require('commander');
 
 program
-    .option('-f, --input-filepath <inFilepath>', 'The input file path to the openAIR file')
-    .option('-o, --output-filepath <outFilepath>', 'The output filename of the fixed OpenAIR file')
+    .option('-f, --input-filepath <inFilepath>', 'The input file path to the YAIXM file')
+    .option('-o, --output-filepath <outFilepath>', 'The output filename of the generated GeoJSON file')
     .option(
-        '-E, --extend-format',
-        'If true, an additional "AI" token with a unique identifier is injected into each airspace block so that the file is compatible with the extended OpenAIR format. Defaults to "false".'
-    )
-    .option(
-        '-O, --fix-token-order',
-        'If true, will re-order found tokens and put them into the expected order. Note that this will remove all inline comments from the airspace definition blocks! Defaults to "false".'
+        '-T, --type',
+        'The type to read from YAIXM file. Currently only "airspace" is supported. (default: "airspace")'
     )
     .parse(process.argv);
 
 (async () => {
-    const extendFormat = program.extendFormat || false;
-    const fixTokenOrder = program.fixTokenOrder || false;
-
-    const fixFormat = new FixFormat({ extendFormat, fixTokenOrder });
+    const type = program.type || 'airspace';
+    const converter = new YaixmConverter();
     try {
-        await fixFormat.fix({ inFile: program.inputFilepath, outFile: program.outputFilepath });
+        await converter.convert({ inputFilepath: program.inputFilepath, outputFilepath: program.outputFilepath, type });
     } catch (e) {
         console.log(e.message);
     }
