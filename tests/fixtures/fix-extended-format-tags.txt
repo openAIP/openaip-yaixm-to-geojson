@@ -1,0 +1,44 @@
+* re-order AI tag above AN to below AN
+AC D
+AI f456b6cf-177a-4947-95f6-08cc255b7e90
+* this comment will be removed because tokens are re-ordered
+* this comment will be removed because tokens are re-ordered
+AN Etain -Strasbourg Info 119.45
+AH 3000FT MSL
+AL GND
+DP 49:22:15 N 005:31:20 E
+DP 49:22:15 N 005:50:00 E
+DP 49:02:31 N 005:50:00 E
+DP 49:00:00 N 005:45:26 E
+DP 49:00:00 N 005:31:20 E
+DP 49:22:15 N 005:31:20 E
+
+* leave AI tag as is
+AC D
+AN Etain -Strasbourg Info 119.45
+AI f456b6cf-177a-4947-95f6-08cc255b7e90
+AH 3000FT MSL
+AL GND
+DP 49:22:15 N 005:31:20 E
+DP 49:22:15 N 005:50:00 E
+DP 49:02:31 N 005:50:00 E
+DP 49:00:00 N 005:45:26 E
+DP 49:00:00 N 005:31:20 E
+DP 49:22:15 N 005:31:20 E
+
+* re-order AF,AG
+AC D
+AN Etain -Strasbourg Info 119.45
+AI f456b6cf-177a-4947-95f6-08cc255b7e90
+AH 3000FT MSL
+AL GND
+* this comment will be removed because tokens are re-ordered
+AG 123.456
+AF 123.456
+DP 49:22:15 N 005:31:20 E
+DP 49:22:15 N 005:50:00 E
+DP 49:02:31 N 005:50:00 E
+DP 49:00:00 N 005:45:26 E
+DP 49:00:00 N 005:31:20 E
+DP 49:22:15 N 005:31:20 E
+

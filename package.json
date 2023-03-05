@@ -1,0 +1,63 @@
+{
+    "name": "@openaip/yaixm-to-geojson",
+    "version": "0.1.0",
+    "description": "Converts YAIXM to GeoJSON. YAIXM is a simplified version of the FAA/EUROCONTOL Aeronautical Information Exchange Model (AIXM) using YAML.",
+    "keywords": [
+        "openaip",
+        "yaixm",
+        "aixm",
+        "format",
+        "geosjon"
+    ],
+    "authors": [
+        {
+            "name": "Stephan Besser",
+            "email": "stephan@openaip.net",
+            "homepage": "https://www.openaip.net",
+            "role": "Lead developer"
+        }
+    ],
+    "main": "index.js",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/openAIP/openaip-yaixm-to-geojson.git"
+    },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com/"
+    },
+    "bugs": {
+        "url": "https://github.com/openAIP/openaip-yaixm-to-geojson/issues"
+    },
+    "homepage": "https://github.com/openAIP/openaip-yaixm-to-geojson#readme",
+    "scripts": {
+        "test": "TZ='UTC' NODE_ENV=test jest --forceExit -c jest.config.js tests/**",
+        "test-watch": "TZ='UTC' NODE_ENV=test jest --forceExit -c jest.config.js tests/** --watch",
+        "lint": "eslint -c .eslintrc.js .",
+        "run-security-audit": "npm audit --omit=dev",
+        "bump-version": "bump -c 'version bump to ' -tp",
+        "update-packages": "ncu --target minor --upgrade --reject jsts && npm install"
+    },
+    "dependencies": {
+        "check-types": "^11.2.2",
+        "n-readlines": "^1.0.3",
+        "uuid": "^8.3.2"
+    },
+    "devDependencies": {
+        "@babel/eslint-parser": "^7.19.1",
+        "@types/check-types": "^7.3.4",
+        "@types/jest": "^27.5.2",
+        "@types/uuid": "^8.3.4",
+        "commander": "^2.20.3",
+        "eslint": "^8.32.0",
+        "eslint-config-prettier": "^8.6.0",
+        "eslint-plugin-import": "^2.27.5",
+        "eslint-plugin-only-warn": "^1.1.0",
+        "eslint-plugin-prettier": "^4.2.1",
+        "jest": "^27.5.1",
+        "nodemon": "^2.0.20",
+        "npm-check-updates": "^16.6.3",
+        "prettier": "^2.8.3",
+        "version-bump-prompt": "^6.1.0"
+    }
+}

@@ -1,0 +1,55 @@
+** CTR ETAIN (07 mars 2013) **
+AC CTR
+AN CTR Etain -Strasbourg Info 119.45
+AH 3000FT MSL
+AL GND
+DP 49:22:15 N 005:31:20 E
+DP 49:22:15 N 005:50:00 E
+DP 49:02:31 N 005:50:00 E
+DP 49:00:00 N 005:45:26 E
+DP 49:00:00 N 005:31:20 E
+
+****
+* Test Comment 1
+****
+
+* Test Comment 2
+
+** CTR EVREUX (25 OCT 2007) **
+AC CTR
+AN CTR Evreux 118.125
+AH 1500FT MSL
+AL GND
+DP 49:10:22 N 001:14:51 E
+DP 49:09:36 N 001:16:00 E
+* inline comment
+DP 49:08:41 N 001:17:58 E
+DP 49:07:31 N 001:19:31 E
+DP 49:06:23 N 001:20:36 E
+* inline comment
+* inline comment
+DP 49:04:48 N 001:23:12 E
+DP 49:04:00 N 001:25:00 E
+DP 48:55:00 N 001:14:00 E
+DP 48:56:00 N 001:08:30 E
+DP 49:00:00 N 001:01:00 E
+
+* Text comment
+
+** Dispensatory Glider Transit Axes SCTR EVREUX (21 MAR 2002) **
+** Axe 1 Verneuil-Conches-LeNeubourg-Rouen **
+AC W
+AN Transit VV Axe1
+AH 4500FT MSL
+AL 1500FT MSL
+DP 48:46:20 N 000:55:40 E
+* inline comment
+DP 48:57:53 N 000:54:40 E
+* inline comment
+DP 49:09:10 N 001:00:10 E
+DP 49:19:55 N 001:10:40 E
+DP 49:19:55 N 001:10:30 E
+DP 49:09:10 N 001:00:00 E
+DP 48:57:53 N 000:54:30 E
+DP 48:46:20 N 000:55:30 E
+DP 48:46:20 N 000:55:40 E
