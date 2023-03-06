@@ -347,9 +347,14 @@ Node
 =
 
 ```javascript
-const yaixmToGeojson = require('@openaip/yaixm-to-geojson');
+const { YaixmConverter } = require('@openaip/yaixm-to-geojson');
 
-await yaixmToGeojson.convert({inputFilepath: './path/to/input-yaixm-file.txt', outputFilepath:'./path/to/output-geojson-file.geojson', type: 'airspace'});
+const inputFilePath = './path/to/input-yaixm-file.txt';
+
+const converter = new YaixmConverter({ fixGeometries: true, strictSchemaValidation: true });
+// or alternatively call "convertFromBuffer" to read from Buffer
+await converter.convertFromFile(inputFilepath, { type: 'airspace' });
+const geojson = converter.toGeojson();
 ```
 
 CLI
