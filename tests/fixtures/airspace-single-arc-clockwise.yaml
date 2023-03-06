@@ -1,0 +1,20 @@
+airspace:
+    - name: ABERDEEN CTA
+      id: aberdeen-cta
+      type: CTA
+      class: D
+      geometry:
+          - seqno: 1
+            upper: FL115
+            lower: 1500 ft
+            boundary:
+                - line:
+                      - 572153N 0015835W
+                      - 572100N 0015802W
+                      - 572100N 0023356W
+                - arc:
+                      dir: cw
+                      radius: 10 nm
+                      centre: 571834N 0021602W
+                      to: 572153N 0015835W
+

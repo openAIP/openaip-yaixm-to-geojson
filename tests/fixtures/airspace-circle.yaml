@@ -1,0 +1,12 @@
+airspace:
+    - name: BARKSTON HEATH
+      id: barkston-heath-atz
+      type: ATZ
+      geometry:
+          - upper: 2367 ft
+            lower: SFC
+            boundary:
+                - circle:
+                      radius: 2 nm
+                      centre: 525747N 0003337W
+

@@ -5,7 +5,7 @@ used in the unofficial [UK Airspace Repository](https://github.com/ahsparrow/air
 supports reading `airspace` YAIXM definitions.
 
 Internally, the logic uses parts of our [OpenAIR Parser](https://github.com/openAIP/openaip-openair-parser) to also validate the
-given YAIXM definitions. The GeoJSON output is compatible with the output of our [OpenAIR Parser](https://github.com/openAIP/openaip-openair-parser).
+given YAIXM definitions.
 
 ```YAML
 airspace:
@@ -127,7 +127,7 @@ Node
 ```javascript
 const yaixmToGeojson = require('@openaip/yaixm-to-geojson');
 
-await yaixmToGeojson.convert({inputFilepath: './path/to/input-yiaxm-file.txt', outputFilepath:'./path/to/output-geojson-file.geojson', type: 'airspace'});
+await yaixmToGeojson.convert({inputFilepath: './path/to/input-yaixm-file.txt', outputFilepath:'./path/to/output-geojson-file.geojson', type: 'airspace'});
 ```
 
 CLI
@@ -148,5 +148,5 @@ Options:
 Simple command line usage:
 
 ```bash
-node cli.js --type=airspace -f ./path/to/input-yiaxm-file.txt -o ./path/to/output-geojson-file.geojson
+node cli.js --type=airspace -f ./path/to/input-yaixm-file.txt -o ./path/to/output-geojson-file.geojson
 ```

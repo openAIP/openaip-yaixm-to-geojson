@@ -6,4 +6,4 @@ node_modules/
 secrets/
 .npmrc
 nohup.out
-var/
+var/*

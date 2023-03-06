@@ -1,0 +1,16 @@
+airspace:
+    - name: D138D SHOEBURYNESS
+      type: D
+      rules:
+          - NOTAM
+      geometry:
+          - upper: 13000 ft
+            lower: SFC
+            boundary:
+                - line:
+                      - 513714N 0005536E
+                      - 513714N 0011203E
+                      - 513000N 0005300E
+                      - 513009N 0005115E
+                      - 513217N 0004804E
+                      - 513714N 0005000E

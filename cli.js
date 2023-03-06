@@ -16,7 +16,8 @@ program
     const type = program.type || 'airspace';
     const converter = new YaixmConverter();
     try {
-        await converter.convert({ inputFilepath: program.inputFilepath, outputFilepath: program.outputFilepath, type });
+        await converter.convertFromFile(program.inputFilepath, { type });
+        await converter.toGeojsonFile(program.outputFilepath);
     } catch (e) {
         console.log(e.message);
     }
