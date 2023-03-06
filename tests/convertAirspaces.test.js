@@ -3,6 +3,97 @@ const { YaixmConverter } = require('../src/yaixm-converter');
 // TODO add more tests
 
 describe('test parsing complete valid airspace definition blocks to GeoJSON', () => {
+    test('read single airspace with linked ground service', async () => {
+        const inputFilepath = './tests/fixtures/airspace-single-arc-clockwise.yaml';
+        const servicesFilePath = './tests/fixtures/service.yaml';
+        const expectedGeojson = {
+            type: 'FeatureCollection',
+            features: [
+                {
+                    type: 'Feature',
+                    properties: {
+                        name: 'ABERDEEN CTA',
+                        type: 'CTA',
+                        class: 'D',
+                        upperCeiling: {
+                            value: 115,
+                            unit: 'FL',
+                            referenceDatum: 'STD',
+                        },
+                        lowerCeiling: {
+                            value: 1500,
+                            unit: 'FT',
+                            referenceDatum: 'MSL',
+                        },
+                        activity: 'NONE',
+                        groundService: {
+                            callsign: 'ABERDEEN APPROACH',
+                            frequency: '119.055',
+                        },
+                    },
+                    geometry: {
+                        type: 'Polygon',
+                        coordinates: [
+                            [
+                                [-1.976388888888889, 57.36472222222223],
+                                [-1.976137616714953, 57.36476961917806],
+                                [-1.9802991675959791, 57.370807651093656],
+                                [-1.9879760659605967, 57.38041743226575],
+                                [-1.996761391649096, 57.38974779912101],
+                                [-2.0066210921411005, 57.39876170204563],
+                                [-2.017516764723316, 57.407423321120795],
+                                [-2.0294057997460255, 57.415698211370994],
+                                [-2.0422415423557094, 57.42355344283904],
+                                [-2.055973472176495, 57.43095773486922],
+                                [-2.0705474003105264, 57.43788158399978],
+                                [-2.0859056829255787, 57.444297384888955],
+                                [-2.1019874505983895, 57.45017954372469],
+                                [-2.1187288524851353, 57.45550458359893],
+                                [-2.1360633142972523, 57.46025124135936],
+                                [-2.153921808972419, 57.46440055548846],
+                                [-2.172233138847795, 57.467935944598345],
+                                [-2.1909242280666392, 57.47084327617194],
+                                [-2.2099204238808636, 57.47311092522494],
+                                [-2.229145805451892, 57.47472982261007],
+                                [-2.248523498700921, 57.475693492732844],
+                                [-2.267975995718022, 57.47599808049859],
+                                [-2.287425477207954, 57.47564236736153],
+                                [-2.306794136429426, 57.47462777639861],
+                                [-2.3260045030741225, 57.47295836638407],
+                                [-2.344979765532248, 57.47064081489283],
+                                [-2.3636440900025737, 57.46768439051417],
+                                [-2.381922934926929, 57.46410091430869],
+                                [-2.399743359261462, 57.45990471069301],
+                                [-2.41703432313939, 57.455112547986516],
+                                [-2.4337269795319627, 57.44974356890257],
+                                [-2.4497549555752194, 57.443819211313105],
+                                [-2.4650546222992875, 57.437363119659345],
+                                [-2.4795653515735006, 57.43040104742332],
+                                [-2.4932297591638046, 57.422960751113585],
+                                [-2.5059939328877086, 57.41507187625415],
+                                [-2.5178076449456137, 57.406765835899044],
+                                [-2.5286245476046156, 57.398075682223855],
+                                [-2.5384023515109613, 57.38903597177236],
+                                [-2.5471029860091505, 57.379682624958456],
+                                [-2.554692740948369, 57.370052780443615],
+                                [-2.5611423895595182, 57.360184645024944],
+                                [-2.56642729208772, 57.350117339682335],
+                                [-2.5655555555555556, 57.35],
+                                [-1.9672222222222224, 57.35],
+                                [-1.976388888888889, 57.36472222222223],
+                            ],
+                        ],
+                    },
+                },
+            ],
+        };
+
+        const converter = new YaixmConverter({ fixGeometries: true, strictSchemaValidation: true, servicesFilePath });
+        await converter.convertFromFile(inputFilepath, { type: 'airspace' });
+        const geojson = converter.toGeojson();
+
+        expect(geojson).toEqual(expectedGeojson);
+    });
     test('read single airspace with single clockwise arc definition', async () => {
         const inputFilepath = './tests/fixtures/airspace-single-arc-clockwise.yaml';
         const expectedGeojson = {
@@ -366,7 +457,7 @@ describe('test parsing complete valid airspace definition blocks to GeoJSON', ()
             ],
         };
 
-        const converter = new YaixmConverter({ fixGeometries: false });
+        const converter = new YaixmConverter({ fixGeometries: true });
         await converter.convertFromFile(inputFilepath, { type: 'airspace' });
         const geojson = converter.toGeojson();
 
@@ -425,9 +516,10 @@ describe('test parsing complete valid airspace definition blocks to GeoJSON', ()
 describe('test parsing complete airspace file to GeoJSON file', () => {
     test('convert YAIXM airspace file to GeoJSON file without error', async () => {
         const inputFilepath = './tests/fixtures/airspace.yaml';
+        const servicesFilePath = './tests/fixtures/service.yaml';
         const outputGeojsonFilepath = './var/airspace.geojson';
 
-        const converter = new YaixmConverter({ fixGeometries: true, strictSchemaValidation: true });
+        const converter = new YaixmConverter({ fixGeometries: true, strictSchemaValidation: true, servicesFilePath });
         await converter.convertFromFile(inputFilepath, { type: 'airspace' });
         await converter.toGeojsonFile(outputGeojsonFilepath);
 

@@ -15,9 +15,10 @@ class YaixmConverter {
      * @param {number} [config.geometryDetail] - Defines the steps that are used to calculate arcs and circles. Defaults to 100. Higher values
      * @param {boolean} [config.strictSchemaValidation] - If true, the created GEOJSON is validated against the underlying schema to enforce compatibility.
      * If false, simply warns on console about schema mismatch. Defaults to false.
+     * @param {boolean} [config.servicesFilePath] - If given, tries to read services from file. If successful, this will map radio services to airspaces. If not given, services are not read.
      */
     constructor(config) {
-        this.config = Object.assign(DEFAULT_CONFIG, config);
+        this.config = { ...DEFAULT_CONFIG, ...config };
 
         if (checkTypes.boolean(this.config.validateGeometries) === false) {
             throw new Error(
@@ -34,6 +35,9 @@ class YaixmConverter {
             throw new Error(
                 `Missing or invalid config parameter 'strictSchemaValidation': ${this.config.strictSchemaValidation}`
             );
+        }
+        if (this.config.servicesFilePath != null && checkTypes.nonEmptyString(this.config.servicesFilePath) === false) {
+            throw new Error(`Missing or invalid config parameter 'servicesFilePath': ${this.config.servicesFilePath}`);
         }
 
         /** @type {Object} */
@@ -86,8 +90,8 @@ class YaixmConverter {
             throw new Error("Missing or invalid config parameter 'type'");
         }
 
-        const converter = this.getConverter(type, this.config);
-        this.geojson = converter.convert(buffer);
+        const converter = this.getConverter(type);
+        this.geojson = await converter.convert(buffer);
     }
 
     /**
@@ -123,14 +127,13 @@ class YaixmConverter {
      *
      *
      * @param {string} type
-     * @param {Object} [config]
      * @return {Object}
      * @private
      */
-    getConverter(type, config) {
+    getConverter(type) {
         switch (type) {
             case 'airspace':
-                return new AirspaceConverter(config);
+                return new AirspaceConverter(this.config);
             default:
                 throw new Error(`Unknown type '${type}'`);
         }

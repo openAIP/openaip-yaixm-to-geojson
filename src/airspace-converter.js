@@ -20,6 +20,7 @@ const cleanDeep = require('clean-deep');
 const Ajv = require('ajv/dist/2020');
 const addFormats = require('ajv-formats');
 const ajvKeywords = require('ajv-keywords');
+const fs = require('node:fs');
 
 const DEFAULT_CONFIG = require('./default-config');
 const ALLOWED_TYPES = ['CTA', 'TMA', 'CTR', 'ATZ', 'OTHER', 'D', 'P', 'R', 'D_OTHER'];
@@ -40,9 +41,11 @@ class AirspaceConverter {
      * @param {Object} [config.fixGeometries] - Fix geometries that are not valid. Defaults to false.
      * @param {number} [config.geometryDetail] - Defines the steps that are used to calculate arcs and circles. Defaults to 100. Higher values mean smoother circles but a higher number of polygon points.
      * @param {boolean} [config.strictSchemaValidation] - If true, the created GEOJSON is validated against the underlying schema to enforce compatibility.
+     * If false, simply warns on console about schema mismatch. Defaults to false.
+     * @param {boolean} [config.servicesFilePath] - If given, tries to read services from file. If successful, this will map radio services to airspaces. If not given, services are not read.
      */
     constructor(config) {
-        this.config = Object.assign(DEFAULT_CONFIG, config);
+        this.config = { ...DEFAULT_CONFIG, ...config };
 
         if (checkTypes.boolean(this.config.validateGeometries) === false) {
             throw new Error(
@@ -59,6 +62,9 @@ class AirspaceConverter {
             throw new Error(
                 `Missing or invalid config parameter 'strictSchemaValidation': ${this.config.strictSchemaValidation}`
             );
+        }
+        if (this.config.servicesFilePath != null && checkTypes.nonEmptyString(this.config.servicesFilePath) === false) {
+            throw new Error(`Missing or invalid config parameter 'servicesFilePath': ${this.config.servicesFilePath}`);
         }
 
         this.ajv = new Ajv({
@@ -94,7 +100,7 @@ class AirspaceConverter {
      * @param {Buffer} buffer
      * @return {Object}
      */
-    convert(buffer) {
+    async convert(buffer) {
         this.reset();
 
         if (checkTypes.instance(buffer, Buffer) === false) {
@@ -104,7 +110,7 @@ class AirspaceConverter {
         const geojsonFeatures = [];
         const yaixm = YAML.parse(buffer.toString('utf-8'));
         for (const airspace of yaixm.airspace) {
-            geojsonFeatures.push(...this.createAirspaceFeatures(airspace));
+            geojsonFeatures.push(...(await this.createAirspaceFeatures(airspace)));
         }
 
         const geojson = createFeatureCollection(geojsonFeatures);
@@ -126,9 +132,9 @@ class AirspaceConverter {
      * @return {Object}
      * @private
      */
-    createAirspaceFeatures(airspaceJson) {
+    async createAirspaceFeatures(airspaceJson) {
         const features = [];
-        const { name, type, localtype: localType, class: airspaceClass, geometry, rules } = airspaceJson;
+        const { name, id, type, localtype: localType, class: airspaceClass, geometry, rules } = airspaceJson;
         // set identifier for error messages
         this.ident = name;
         // map to only type/class combination
@@ -161,34 +167,72 @@ class AirspaceConverter {
                     throw new Error(message);
                 }
             }
+            const feature = {
+                type: 'Feature',
+                // set "base" airspace properties that is common to all airspaces defined in YAIXM  block. Each YAIXM block can define
+                // multiple airspaces, all with the same base properties.
+                properties: {
+                    ...{
+                        name,
+                        type: mappedType,
+                        class: mappedClass,
+                        upperCeiling,
+                        lowerCeiling,
+                        // set default value, will be overwritten by "metaProps" if applicable
+                        activity: 'NONE',
+                        remarks: rules == null ? null : rules.join(', '),
+                    },
+                    // merges additional fields like "activity"
+                    ...metaProps,
+                },
+                geometry,
+            };
+            // add frequency property if services file is configured and mapping property "id" is set
+            if (id != null && this.config.servicesFilePath) {
+                feature.properties.groundService = await this.createGroundServiceProperty(id);
+            }
 
-            features.push(
-                cleanDeep({
-                    type: 'Feature',
-                    // set "base" airspace properties that is common to all airspaces defined in YAIXM  block. Each YAIXM block can define
-                    // multiple airspaces, all with the same base properties.
-                    properties: Object.assign(
-                        {
-                            name,
-                            type: mappedType,
-                            class: mappedClass,
-                            upperCeiling,
-                            lowerCeiling,
-                            // set default value, will be overwritten by "metaProps" if applicable
-                            activity: 'NONE',
-                            remarks: rules == null ? null : rules.join(', '),
-                        },
-                        // merges additional fields like "activity"
-                        metaProps
-                    ),
-                    geometry,
-                })
-            );
+            features.push(cleanDeep(feature));
             // IMPORTANT reset internal state for next airspace
             this.reset();
         }
 
         return features;
+    }
+
+    /**
+     * Maps ground service frequency to airspace if possible. Will return null if no mapping is found.
+     *
+     * @param {string} id
+     * @return {Promise<Object|null>}
+     * @private
+     */
+    async createGroundServiceProperty(id) {
+        const exists = await fs.existsSync(this.config.servicesFilePath);
+        if (exists === false) {
+            throw new Error(`Configured airspace services file '${this.config.servicesFilePath}' does not exist.`);
+        }
+        try {
+            // read services file
+            const servicesJson = await YAML.parse(await fs.readFileSync(this.config.servicesFilePath, 'utf-8'));
+            for (const service of servicesJson.service) {
+                const { callsign, controls, frequency } = service;
+                // airspace "id" is mapped to "controls"" in services file
+                if (controls?.includes(id)) {
+                    return {
+                        callsign,
+                        frequency: frequency.toString(),
+                    };
+                }
+            }
+
+            return null;
+        } catch (e) {
+            // only warn if error
+            console.log(`WARN: Failed to read airspace services file '${this.config.servicesFilePath}'. ${e.message}`);
+
+            return null;
+        }
     }
 
     /**

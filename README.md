@@ -204,6 +204,19 @@ Outputs a GeoJSON FeatureCollection with the following JSON schema:
                                     "lowerCeiling": {
                                         "$ref": "#/definitions/verticalLimit"
                                     },
+                                    "groundService": {
+                                        "type": "object",
+                                        "properties": {
+                                            "callsign": { "type": "string" , "example": "ABERDEEN APPROACH"},
+                                            "frequency": { "type": "string", "example": "118.000" }
+                                        },
+                                        "description": "The ground service callsign and frequency if available.",
+                                        "required": [
+                                            "callsign",
+                                            "frequency"
+                                        ],
+                                        "additionalProperties": false
+                                    },
                                     "remarks": {
                                         "type": "string",
                                         "description": "A remarks field. If available, this will contain content of the parsed 'rules' list to add more metadata on the airspace."
