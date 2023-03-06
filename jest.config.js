@@ -37,6 +37,7 @@ module.exports = {
         '/docs/',
         '/secrets/',
         '/schemas/',
+        '/var/',
     ],
 
     // A list of reporter names that Jest uses when writing coverage reports

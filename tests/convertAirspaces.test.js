@@ -1,5 +1,7 @@
 const { YaixmConverter } = require('../src/yaixm-converter');
 
+// TODO add more tests
+
 describe('test parsing complete valid airspace definition blocks to GeoJSON', () => {
     test('read single airspace with single clockwise arc definition', async () => {
         const inputFilepath = './tests/fixtures/airspace-single-arc-clockwise.yaml';
@@ -19,9 +21,10 @@ describe('test parsing complete valid airspace definition blocks to GeoJSON', ()
                         },
                         lowerCeiling: {
                             value: 1500,
-                            unit: 'ft',
+                            unit: 'FT',
                             referenceDatum: 'MSL',
                         },
+                        activity: 'NONE',
                     },
                     geometry: {
                         type: 'Polygon',
@@ -80,7 +83,7 @@ describe('test parsing complete valid airspace definition blocks to GeoJSON', ()
             ],
         };
 
-        const converter = new YaixmConverter({ fixGeometries: true });
+        const converter = new YaixmConverter({ fixGeometries: true, strictSchemaValidation: true });
         await converter.convertFromFile(inputFilepath, { type: 'airspace' });
         const geojson = converter.toGeojson();
 
@@ -104,9 +107,10 @@ describe('test parsing complete valid airspace definition blocks to GeoJSON', ()
                         },
                         lowerCeiling: {
                             value: 1500,
-                            unit: 'ft',
+                            unit: 'FT',
                             referenceDatum: 'MSL',
                         },
+                        activity: 'NONE',
                     },
                     geometry: {
                         type: 'Polygon',
@@ -221,7 +225,7 @@ describe('test parsing complete valid airspace definition blocks to GeoJSON', ()
             ],
         };
 
-        const converter = new YaixmConverter({ fixGeometries: true });
+        const converter = new YaixmConverter({ fixGeometries: true, strictSchemaValidation: true });
         await converter.convertFromFile(inputFilepath, { type: 'airspace' });
         const geojson = converter.toGeojson();
 
@@ -237,16 +241,18 @@ describe('test parsing complete valid airspace definition blocks to GeoJSON', ()
                     properties: {
                         name: 'BARKSTON HEATH',
                         type: 'ATZ',
+                        class: 'G',
                         upperCeiling: {
                             value: 2367,
-                            unit: 'ft',
+                            unit: 'FT',
                             referenceDatum: 'MSL',
                         },
                         lowerCeiling: {
                             value: 0,
                             unit: 'FT',
-                            referenceDatum: 'SFC',
+                            referenceDatum: 'GND',
                         },
+                        activity: 'NONE',
                     },
                     geometry: {
                         type: 'Polygon',
@@ -375,18 +381,20 @@ describe('test parsing complete valid airspace definition blocks to GeoJSON', ()
                     type: 'Feature',
                     properties: {
                         name: 'D138D SHOEBURYNESS',
-                        type: 'D',
-                        rules: ['NOTAM'],
+                        type: 'DANGER',
+                        class: 'UNCLASSIFIED',
                         upperCeiling: {
                             value: 13000,
-                            unit: 'ft',
+                            unit: 'FT',
                             referenceDatum: 'MSL',
                         },
                         lowerCeiling: {
                             value: 0,
                             unit: 'FT',
-                            referenceDatum: 'SFC',
+                            referenceDatum: 'GND',
                         },
+                        activity: 'NONE',
+                        remarks: 'NOTAM',
                     },
                     geometry: {
                         type: 'Polygon',
@@ -406,7 +414,7 @@ describe('test parsing complete valid airspace definition blocks to GeoJSON', ()
             ],
         };
 
-        const converter = new YaixmConverter({ fixGeometries: false });
+        const converter = new YaixmConverter({ fixGeometries: false, strictSchemaValidation: true });
         await converter.convertFromFile(inputFilepath, { type: 'airspace' });
         const geojson = converter.toGeojson();
 
@@ -419,7 +427,7 @@ describe('test parsing complete airspace file to GeoJSON file', () => {
         const inputFilepath = './tests/fixtures/airspace.yaml';
         const outputGeojsonFilepath = './var/airspace.geojson';
 
-        const converter = new YaixmConverter({ fixGeometries: true });
+        const converter = new YaixmConverter({ fixGeometries: true, strictSchemaValidation: true });
         await converter.convertFromFile(inputFilepath, { type: 'airspace' });
         await converter.toGeojsonFile(outputGeojsonFilepath);
 

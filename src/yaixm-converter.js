@@ -13,7 +13,8 @@ class YaixmConverter {
      * @param {Object} [config.validateGeometries] - Validate geometries. Defaults to true.
      * @param {Object} [config.fixGeometries] - Fix geometries that are not valid. Defaults to false.
      * @param {number} [config.geometryDetail] - Defines the steps that are used to calculate arcs and circles. Defaults to 100. Higher values
-     * mean smoother circles but a higher number of polygon points.
+     * @param {boolean} [config.strictSchemaValidation] - If true, the created GEOJSON is validated against the underlying schema to enforce compatibility.
+     * If false, simply warns on console about schema mismatch. Defaults to false.
      */
     constructor(config) {
         this.config = Object.assign(DEFAULT_CONFIG, config);
@@ -28,6 +29,11 @@ class YaixmConverter {
         }
         if (checkTypes.integer(this.config.geometryDetail) === false) {
             throw new Error(`Missing or invalid config parameter 'geometryDetail': ${this.config.geometryDetail}`);
+        }
+        if (checkTypes.boolean(this.config.strictSchemaValidation) === false) {
+            throw new Error(
+                `Missing or invalid config parameter 'strictSchemaValidation': ${this.config.strictSchemaValidation}`
+            );
         }
 
         /** @type {Object} */
@@ -105,7 +111,7 @@ class YaixmConverter {
 
         try {
             // write geojson to file at outputFilepath
-            const buffer = Buffer.from(JSON.stringify(this.geojson));
+            const buffer = Buffer.from(JSON.stringify(this.geojson, null, 2), 'utf-8');
             await fs.writeFileSync(outputFilepath, buffer);
         } catch (e) {
             throw new Error(`Error writing file '${outputFilepath}': ${e.message}`);

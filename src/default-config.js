@@ -5,4 +5,6 @@ module.exports = {
     fixGeometries: false,
     // Defines the level of detail (smoothness) of arc/circular geometries.
     geometryDetail: 100,
+    // If true, the created GEOJSON is validated against the underlying schema to enforce compatibility. If not true, simply warns on console about schema mismatch.
+    strictSchemaValidation: false,
 };

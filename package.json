@@ -45,7 +45,11 @@
         "clean-deep": "^3.4.0",
         "coordinate-parser": "^1.0.7",
         "jsts": "<=2.6.1",
-        "yaml": "^2.2.1"
+        "yaml": "^2.2.1",
+        "ajv": "^8.12.0",
+        "ajv-errors": "^3.0.0",
+        "ajv-formats": "^2.1.1",
+        "ajv-keywords": "^5.1.0"
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.19.1",

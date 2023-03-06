@@ -17,14 +17,21 @@ const Coordinates = require('coordinate-parser');
 const rewind = require('@mapbox/geojson-rewind');
 const jsts = require('jsts');
 const cleanDeep = require('clean-deep');
+const Ajv = require('ajv/dist/2020');
+const addFormats = require('ajv-formats');
+const ajvKeywords = require('ajv-keywords');
 
 const DEFAULT_CONFIG = require('./default-config');
+const ALLOWED_TYPES = ['CTA', 'TMA', 'CTR', 'ATZ', 'OTHER', 'D', 'P', 'R', 'D_OTHER'];
+const ALLOWED_LOCALTYPES = ['MATZ', 'GLIDER', 'GVS', 'HIRTA', 'LASER', 'DZ', 'NOATZ', 'UL', 'ILS', 'RMZ', 'TMZ'];
+const ALLOWED_CLASSES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'UNCLASSIFIED'];
 const REGEX_CEILING_SURFACE = /^(SFC)$/;
-const REGEX_CEILING_FEET = /^(\d+(\.\d+)?)\s*(FT|ft)?\s*(SFC)?$/;
+const REGEX_CEILING_FEET = /^(\d+(\.\d+)?)\s*(ft|FT)?\s*(SFC)?$/;
 const REGEX_CEILING_FLIGHT_LEVEL = /^FL\s*(\d{2,})?$/;
 const REGEX_COORDINATES = /^[0-9]{6}[NS]\s+[0-9]{7}[EW]$/;
 const REGEX_ARC_DIR = /^(cw|ccw)$/;
 const REGEX_ARC_RADIUS = /^(\d+(\.\d+)?)\s*(NM|nm)?$/;
+const GEOJSON_SCHEMA = require('../schemas/geojson-schema.json');
 
 class AirspaceConverter {
     /**
@@ -32,6 +39,7 @@ class AirspaceConverter {
      * @param {Object} [config.validateGeometries] - Validate geometries. Defaults to true.
      * @param {Object} [config.fixGeometries] - Fix geometries that are not valid. Defaults to false.
      * @param {number} [config.geometryDetail] - Defines the steps that are used to calculate arcs and circles. Defaults to 100. Higher values mean smoother circles but a higher number of polygon points.
+     * @param {boolean} [config.strictSchemaValidation] - If true, the created GEOJSON is validated against the underlying schema to enforce compatibility.
      */
     constructor(config) {
         this.config = Object.assign(DEFAULT_CONFIG, config);
@@ -47,6 +55,31 @@ class AirspaceConverter {
         if (checkTypes.integer(this.config.geometryDetail) === false) {
             throw new Error(`Missing or invalid config parameter 'geometryDetail': ${this.config.geometryDetail}`);
         }
+        if (checkTypes.boolean(this.config.strictSchemaValidation) === false) {
+            throw new Error(
+                `Missing or invalid config parameter 'strictSchemaValidation': ${this.config.strictSchemaValidation}`
+            );
+        }
+
+        this.ajv = new Ajv({
+            // nullable: true,
+            verbose: true,
+            allErrors: true,
+            // jsonPointers: true,
+        });
+        // set all used formats
+        addFormats(this.ajv, ['date-time', 'date']);
+        // set all used keywords
+        ajvKeywords(this.ajv, []);
+        // add unknown keywords that would otherwise result in an exception
+        this.ajv.addVocabulary(['example']);
+        require('ajv-errors')(this.ajv);
+        // add schema
+        this.ajv.validateSchema(GEOJSON_SCHEMA);
+        this.ajv.addSchema(GEOJSON_SCHEMA);
+        this.schemaValidator = this.ajv.getSchema(
+            'https://adhoc-schemas.openaip.net/schemas/parsed-yaixm-airspace.json'
+        );
 
         // used in error messages to better identify the airspace that caused the error
         this.ident = null;
@@ -74,7 +107,19 @@ class AirspaceConverter {
             geojsonFeatures.push(...this.createAirspaceFeatures(airspace));
         }
 
-        return createFeatureCollection(geojsonFeatures);
+        const geojson = createFeatureCollection(geojsonFeatures);
+        const valid = this.schemaValidator(geojson);
+        if (valid === false) {
+            if (this.config.strictSchemaValidation) {
+                throw new Error(
+                    `GeoJSON does not adhere to underlying schema. ${JSON.stringify(this.schemaValidator.errors)}`
+                );
+            } else {
+                console.log('WARN: GeoJSON does not adhere to underlying schema.');
+            }
+        }
+
+        return geojson;
     }
 
     /**
@@ -84,12 +129,18 @@ class AirspaceConverter {
     createAirspaceFeatures(airspaceJson) {
         const features = [];
         const { name, type, localtype: localType, class: airspaceClass, geometry, rules } = airspaceJson;
+        // set identifier for error messages
+        this.ident = name;
+        // map to only type/class combination
+        const {
+            type: mappedType,
+            class: mappedClass,
+            metaProps,
+        } = this.mapClassAndType(type, localType, airspaceClass);
 
         // for each airspace geometry defined in YAIXM block, create a GeoJSON feature
         for (const geometryDefinition of geometry) {
             const { seqno, upper, lower, boundary } = geometryDefinition;
-            // set identifier for error messages
-            this.ident = name;
             // set sequence number for error messages, use "0" if no sequence number is defined
             this.seqno = seqno || 0;
 
@@ -116,15 +167,20 @@ class AirspaceConverter {
                     type: 'Feature',
                     // set "base" airspace properties that is common to all airspaces defined in YAIXM  block. Each YAIXM block can define
                     // multiple airspaces, all with the same base properties.
-                    properties: {
-                        name,
-                        localType: localType,
-                        type: type,
-                        class: airspaceClass,
-                        rules,
-                        upperCeiling,
-                        lowerCeiling,
-                    },
+                    properties: Object.assign(
+                        {
+                            name,
+                            type: mappedType,
+                            class: mappedClass,
+                            upperCeiling,
+                            lowerCeiling,
+                            // set default value, will be overwritten by "metaProps" if applicable
+                            activity: 'NONE',
+                            remarks: rules == null ? null : rules.join(', '),
+                        },
+                        // merges additional fields like "activity"
+                        metaProps
+                    ),
                     geometry,
                 })
             );
@@ -140,16 +196,130 @@ class AirspaceConverter {
      * @param {string} localType
      * @param {string} airspaceClass
      *
-     * @return {{type: string, class: string}}
+     * @return {{type: string, class: string, [metaProps]: Object}}
      */
     mapClassAndType(type, localType, airspaceClass) {
+        let message = `Failed to map class/type combination for airspace '${this.ident}'.`;
+        // check type is allowed
+        if (ALLOWED_TYPES.includes(type) === false) {
+            throw new Error(`${message} The 'type' value '${type}' is not in the list of allowed types.`);
+        }
+        if (localType != null && ALLOWED_LOCALTYPES.includes(localType) === false) {
+            throw new Error(
+                `${message} The 'localtype' value '${localType}' is not in the list of allowed localtypes.`
+            );
+        }
+        if (airspaceClass != null && ALLOWED_CLASSES.includes(airspaceClass) === false) {
+            throw new Error(`${message} The 'class' value '${airspaceClass}' is not in the list of allowed classes.`);
+        }
+
         if (type != null && airspaceClass != null) {
-            return { type, class: airspaceClass };
+            let mappedType = null;
+            let mappedClass = null;
+
+            switch (type) {
+                case 'CTA':
+                    mappedType = 'CTA';
+                    break;
+                case 'TMA':
+                    mappedType = 'TMA';
+                    break;
+                case 'CTR':
+                    mappedType = 'CTR';
+                    break;
+                case 'ATZ':
+                    mappedType = 'ATZ';
+                    break;
+                case 'D':
+                    mappedType = 'DANGER';
+                    break;
+                case 'P':
+                    mappedType = 'PROHIBITED';
+                    break;
+                case 'R':
+                    mappedType = 'RESTRICTED';
+                    break;
+                default:
+                    throw new Error(`${message} The 'type' value '${type}' has no configured mapping.`);
+            }
+            if (ALLOWED_CLASSES.includes(airspaceClass)) {
+                mappedClass = airspaceClass;
+            } else {
+                throw new Error(`${message} The 'class' value '${airspaceClass}' has no configured mapping.`);
+            }
+
+            return { type: mappedType, class: mappedClass };
         } else if (type != null && localType != null) {
+            const comb = `${type}|${localType}`;
+            switch (comb) {
+                case 'OTHER|MATZ':
+                    return { type: 'MATZ', class: 'G' };
+                case 'D_OTHER|GLIDER':
+                    return { type: 'GLIDING_SECTOR', class: 'UNCLASSIFIED' };
+                // gas venting station
+                /*
+                GVS - gas venting station
+                HIRTA - high intensity radio transmission area
+                LASER - "biu biu biu"
+                ILS - ILS feather
+                 */
+                case 'D_OTHER|GVS':
+                case 'D_OTHER|HIRTA':
+                case 'D_OTHER|LASER':
+                case 'OTHER|ILS':
+                    return { type: 'WARNING', class: 'UNCLASSIFIED' };
+                case 'D_OTHER|DZ':
+                    return {
+                        type: 'AERIAL_SPORTING_RECREATIONAL',
+                        class: 'UNCLASSIFIED',
+                        metaProps: { activity: 'PARACHUTING' },
+                    };
+                case 'OTHER|GLIDER':
+                case 'OTHER|NOATZ':
+                    return {
+                        type: 'AERIAL_SPORTING_RECREATIONAL',
+                        class: 'UNCLASSIFIED',
+                        metaProps: { activity: 'AEROCLUB_AERIAL_WORK' },
+                    };
+                case 'OTHER|UL':
+                    return {
+                        type: 'AERIAL_SPORTING_RECREATIONAL',
+                        class: 'UNCLASSIFIED',
+                        metaProps: { activity: 'ULM' },
+                    };
+                case 'OTHER|RMZ':
+                    return {
+                        type: 'RMZ',
+                        class: 'UNCLASSIFIED',
+                    };
+                case 'OTHER|TMZ':
+                    return {
+                        type: 'TMZ',
+                        class: 'UNCLASSIFIED',
+                    };
+                default:
+                    throw new Error(
+                        `${message} The 'type' value '${type}' and 'localtype' value '${localType}' has no configured mapping.`
+                    );
+            }
+        } else if (type != null) {
+            switch (type) {
+                case 'ATZ':
+                case 'MATZ':
+                    return { type, class: 'G' };
+                case 'D':
+                    return { type: 'DANGER', class: 'UNCLASSIFIED' };
+                case 'P':
+                    return { type: 'PROHIBITED', class: 'UNCLASSIFIED' };
+                case 'R':
+                    return { type: 'RESTRICTED', class: 'UNCLASSIFIED' };
+                default:
+                    throw new Error(`${message} The type value '${type}' has no configured mapping.`);
+            }
         }
 
         throw new Error(
-            `Failed to map class/type combination for airspace '${this.ident}' in sequence number '${this.seqno}'`
+            `${message} No mapping for combination '${JSON.stringify({ type, localType, class: airspaceClass })}'`
         );
     }
 
@@ -183,17 +353,17 @@ class AirspaceConverter {
         }
 
         if (isValidSurfaceDefinition) {
-            const altitudeParts = REGEX_CEILING_SURFACE.exec(ceilingDefinition);
-            let referenceDatum = altitudeParts[0];
-
-            return { value: 0, unit: 'FT', referenceDatum };
+            // always use instead of SFC
+            return { value: 0, unit: 'FT', referenceDatum: 'GND' };
         } else if (isValidFeetDefinition) {
             // check for "default" altitude definition, e.g. 16500ft MSL or similar
             const altitudeParts = REGEX_CEILING_FEET.exec(ceilingDefinition);
             // get altitude parts
             let value = parseFloat(altitudeParts[1]);
-            let unit = altitudeParts[3];
-            const referenceDatum = altitudeParts[4] || 'MSL';
+            let unit = altitudeParts[3].toUpperCase();
+            let referenceDatum = altitudeParts[4] || 'MSL';
+            // always use instead of SFC
+            referenceDatum = referenceDatum === 'SFC' ? 'GND' : referenceDatum.toUpperCase();
 
             return { value, unit, referenceDatum };
         } else if (isValidFlightLevelDefinition) {
@@ -201,10 +371,8 @@ class AirspaceConverter {
             const altitudeParts = REGEX_CEILING_FLIGHT_LEVEL.exec(ceilingDefinition);
             // get altitude parts
             let value = parseInt(altitudeParts[1]);
-            const unit = 'FL';
-            const referenceDatum = 'STD';
 
-            return { value, unit, referenceDatum };
+            return { value, unit: 'FL', referenceDatum: 'STD' };
         }
     }
 
