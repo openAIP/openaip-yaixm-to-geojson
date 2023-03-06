@@ -8,5 +8,4 @@ secrets/
 nohup.out
 var/*
 
-
-!somefolder/.gitkeep
+!var/.gitkeep
