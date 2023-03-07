@@ -178,6 +178,7 @@ class AirspaceConverter {
                         class: mappedClass,
                         upperCeiling,
                         lowerCeiling,
+                        activatedByNotam: rules?.includes('NOTAM') === true,
                         // set default value, will be overwritten by "metaProps" if applicable
                         activity: 'NONE',
                         remarks: rules == null ? null : rules.join(', '),

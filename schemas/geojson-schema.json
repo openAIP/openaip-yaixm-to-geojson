@@ -95,6 +95,7 @@
                                         ],
                                         "additionalProperties": false
                                     },
+                                    "activatedByNotam": { "type": "boolean", "description": "If true, the airspace is activated by a NOTAM." },
                                     "remarks": {
                                         "type": "string",
                                         "description": "A remarks field. If available, this will contain content of the parsed 'rules' list to add more metadata on the airspace."
@@ -106,6 +107,7 @@
                                     "class",
                                     "upperCeiling",
                                     "lowerCeiling",
+                                    "activatedByNotam",
                                     "activity"
                                 ],
                                 "additionalProperties": false

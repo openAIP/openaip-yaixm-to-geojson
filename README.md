@@ -204,6 +204,7 @@ Outputs a GeoJSON FeatureCollection with the following JSON schema:
                                     "lowerCeiling": {
                                         "$ref": "#/definitions/verticalLimit"
                                     },
+                                    "activatedByNotam": { "type": "boolean", "description": "If true, the airspace is activated by a NOTAM." },
                                     "groundService": {
                                         "type": "object",
                                         "properties": {
@@ -228,6 +229,7 @@ Outputs a GeoJSON FeatureCollection with the following JSON schema:
                                     "class",
                                     "upperCeiling",
                                     "lowerCeiling",
+                                    "activatedByNotam",
                                     "activity"
                                 ],
                                 "additionalProperties": false

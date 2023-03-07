@@ -26,6 +26,7 @@ describe('test parsing complete valid airspace definition blocks to GeoJSON', ()
                             referenceDatum: 'MSL',
                         },
                         activity: 'NONE',
+                        activatedByNotam: false,
                         groundService: {
                             callsign: 'ABERDEEN APPROACH',
                             frequency: '119.055',
@@ -115,6 +116,7 @@ describe('test parsing complete valid airspace definition blocks to GeoJSON', ()
                             unit: 'FT',
                             referenceDatum: 'MSL',
                         },
+                        activatedByNotam: false,
                         activity: 'NONE',
                     },
                     geometry: {
@@ -201,6 +203,7 @@ describe('test parsing complete valid airspace definition blocks to GeoJSON', ()
                             unit: 'FT',
                             referenceDatum: 'MSL',
                         },
+                        activatedByNotam: false,
                         activity: 'NONE',
                     },
                     geometry: {
@@ -343,6 +346,7 @@ describe('test parsing complete valid airspace definition blocks to GeoJSON', ()
                             unit: 'FT',
                             referenceDatum: 'GND',
                         },
+                        activatedByNotam: false,
                         activity: 'NONE',
                     },
                     geometry: {
@@ -484,6 +488,7 @@ describe('test parsing complete valid airspace definition blocks to GeoJSON', ()
                             unit: 'FT',
                             referenceDatum: 'GND',
                         },
+                        activatedByNotam: true,
                         activity: 'NONE',
                         remarks: 'NOTAM',
                     },
