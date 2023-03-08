@@ -5,7 +5,7 @@ const { AirspaceConverter } = require('./airspace-converter');
 const DEFAULT_CONFIG = require('./default-config');
 
 /**
- * Converts YAIXM files to GeoJSON file.
+ * Converts a YAIXM file to GeoJSON file.
  */
 class YaixmConverter {
     /**
@@ -15,7 +15,6 @@ class YaixmConverter {
      * @param {number} [config.geometryDetail] - Defines the steps that are used to calculate arcs and circles. Defaults to 100. Higher values
      * @param {boolean} [config.strictSchemaValidation] - If true, the created GEOJSON is validated against the underlying schema to enforce compatibility.
      * If false, simply warns on console about schema mismatch. Defaults to false.
-     * @param {boolean} [config.servicesFilePath] - If given, tries to read services from file. If successful, this will map radio services to airspaces. If not given, services are not read.
      */
     constructor(config) {
         this.config = { ...DEFAULT_CONFIG, ...config };
@@ -36,9 +35,6 @@ class YaixmConverter {
                 `Missing or invalid config parameter 'strictSchemaValidation': ${this.config.strictSchemaValidation}`
             );
         }
-        if (this.config.servicesFilePath != null && checkTypes.nonEmptyString(this.config.servicesFilePath) === false) {
-            throw new Error(`Missing or invalid config parameter 'servicesFilePath': ${this.config.servicesFilePath}`);
-        }
 
         /** @type {Object} */
         this.geojson = null;
@@ -48,12 +44,13 @@ class YaixmConverter {
      * @param {string} inputFilepath
      * @param {Object} config
      * @param {string} config.type - Type of YAIXM content. Currently only "airspace" is supported.
+     * @param {string} [config.serviceFilePath] - If given, tries to read services from file if type is "airspace". If successful, this will map radio services to airspaces. If not given, services are not read.
      * @return {Promise<void>}
      */
     async convertFromFile(inputFilepath, config) {
         this.reset();
 
-        const { type } = config;
+        const { type, serviceFilePath } = config;
 
         if (checkTypes.nonEmptyString(inputFilepath) === false) {
             throw new Error("Missing or invalid parameter 'inputFilePath'");
@@ -61,27 +58,44 @@ class YaixmConverter {
         if (checkTypes.nonEmptyString(type) === false) {
             throw new Error("Missing or invalid config parameter 'type'");
         }
+        if (serviceFilePath != null && checkTypes.nonEmptyString(serviceFilePath) === false) {
+            throw new Error(`Missing or invalid config parameter 'serviceFilePath': ${serviceFilePath}`);
+        }
 
-        const exists = await fs.existsSync(inputFilepath);
-        if (exists === false) {
+        const existsAirspaceFile = await fs.existsSync(inputFilepath);
+        if (existsAirspaceFile === false) {
             throw new Error(`File '${inputFilepath}' does not exist`);
         }
+        if (serviceFilePath != null) {
+            const existsServiceFile = await fs.existsSync(serviceFilePath);
+            if (existsServiceFile === false) {
+                throw new Error(`File '${serviceFilePath}' does not exist`);
+            }
+        }
+
         // read file content from inputFilePath to Buffer and hand over to convertFromBuffer function
         const buffer = await fs.readFileSync(inputFilepath);
 
-        return this.convertFromBuffer(buffer, { type });
+        const convertConfig = { type };
+        if (serviceFilePath != null) {
+            convertConfig.serviceFileBuffer = await fs.readFileSync(serviceFilePath);
+        }
+
+        return this.convertFromBuffer(buffer, convertConfig);
     }
 
     /**
      * @param {Buffer} buffer
      * @param {Object} config
      * @param {string} config.type - Type of YAIXM content. Currently only "airspace" is supported.
+     * @param {Buffer} [config.serviceFileBuffer] - Buffer of a "service.yaml" file. If given, tries to read services from file if type is "airspace".
+     * If successful, this will map radio services to airspaces. If not given, services are not read.
      * @return {Promise<void>}
      */
     async convertFromBuffer(buffer, config) {
         this.reset();
 
-        const { type } = config;
+        const { type, serviceFileBuffer } = config;
 
         if (checkTypes.instance(buffer, Buffer) === false) {
             throw new Error("Missing or invalid parameter 'buffer'");
@@ -89,9 +103,12 @@ class YaixmConverter {
         if (checkTypes.nonEmptyString(type) === false) {
             throw new Error("Missing or invalid config parameter 'type'");
         }
+        if (serviceFileBuffer != null && checkTypes.instance(serviceFileBuffer, Buffer) === false) {
+            throw new Error(`Missing or invalid config parameter 'serviceFileBuffer': ${serviceFileBuffer}`);
+        }
 
         const converter = this.getConverter(type);
-        this.geojson = await converter.convert(buffer);
+        this.geojson = await converter.convert(buffer, { serviceFileBuffer });
     }
 
     /**

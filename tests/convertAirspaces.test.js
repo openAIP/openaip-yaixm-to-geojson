@@ -5,7 +5,7 @@ const { YaixmConverter } = require('../src/yaixm-converter');
 describe('test parsing complete valid airspace definition blocks to GeoJSON', () => {
     test('read single airspace with linked ground service', async () => {
         const inputFilepath = './tests/fixtures/airspace-single-arc-clockwise.yaml';
-        const servicesFilePath = './tests/fixtures/service.yaml';
+        const serviceFilePath = './tests/fixtures/service.yaml';
         const expectedGeojson = {
             type: 'FeatureCollection',
             features: [
@@ -89,8 +89,8 @@ describe('test parsing complete valid airspace definition blocks to GeoJSON', ()
             ],
         };
 
-        const converter = new YaixmConverter({ fixGeometries: true, strictSchemaValidation: true, servicesFilePath });
-        await converter.convertFromFile(inputFilepath, { type: 'airspace' });
+        const converter = new YaixmConverter({ fixGeometries: true, strictSchemaValidation: true });
+        await converter.convertFromFile(inputFilepath, { type: 'airspace', serviceFilePath });
         const geojson = converter.toGeojson();
 
         expect(geojson).toEqual(expectedGeojson);
@@ -521,10 +521,10 @@ describe('test parsing complete valid airspace definition blocks to GeoJSON', ()
 describe('test parsing complete airspace file to GeoJSON file', () => {
     test('convert YAIXM airspace file to GeoJSON file without error', async () => {
         const inputFilepath = './tests/fixtures/airspace.yaml';
-        const servicesFilePath = './tests/fixtures/service.yaml';
+        const serviceFilePath = './tests/fixtures/service.yaml';
         const outputGeojsonFilepath = './var/airspace.geojson';
 
-        const converter = new YaixmConverter({ fixGeometries: true, strictSchemaValidation: true, servicesFilePath });
+        const converter = new YaixmConverter({ fixGeometries: true, strictSchemaValidation: true, serviceFilePath });
         await converter.convertFromFile(inputFilepath, { type: 'airspace' });
         await converter.toGeojsonFile(outputGeojsonFilepath);
 

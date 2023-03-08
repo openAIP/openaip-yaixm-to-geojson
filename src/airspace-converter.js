@@ -20,7 +20,6 @@ const cleanDeep = require('clean-deep');
 const Ajv = require('ajv/dist/2020');
 const addFormats = require('ajv-formats');
 const ajvKeywords = require('ajv-keywords');
-const fs = require('node:fs');
 
 const DEFAULT_CONFIG = require('./default-config');
 const ALLOWED_TYPES = ['CTA', 'TMA', 'CTR', 'ATZ', 'OTHER', 'D', 'P', 'R', 'D_OTHER'];
@@ -42,7 +41,6 @@ class AirspaceConverter {
      * @param {number} [config.geometryDetail] - Defines the steps that are used to calculate arcs and circles. Defaults to 100. Higher values mean smoother circles but a higher number of polygon points.
      * @param {boolean} [config.strictSchemaValidation] - If true, the created GEOJSON is validated against the underlying schema to enforce compatibility.
      * If false, simply warns on console about schema mismatch. Defaults to false.
-     * @param {boolean} [config.servicesFilePath] - If given, tries to read services from file. If successful, this will map radio services to airspaces. If not given, services are not read.
      */
     constructor(config) {
         this.config = { ...DEFAULT_CONFIG, ...config };
@@ -62,9 +60,6 @@ class AirspaceConverter {
             throw new Error(
                 `Missing or invalid config parameter 'strictSchemaValidation': ${this.config.strictSchemaValidation}`
             );
-        }
-        if (this.config.servicesFilePath != null && checkTypes.nonEmptyString(this.config.servicesFilePath) === false) {
-            throw new Error(`Missing or invalid config parameter 'servicesFilePath': ${this.config.servicesFilePath}`);
         }
 
         this.ajv = new Ajv({
@@ -98,19 +93,32 @@ class AirspaceConverter {
      * Converts a buffer containing YAIXM airspace data to GeoJSON.
      *
      * @param {Buffer} buffer
+     * @param {Object} options
+     * @param {Buffer} options.serviceFileBuffer - Buffer containing "service.yaml" file data.
      * @return {Object}
      */
-    async convert(buffer) {
+    async convert(buffer, options) {
         this.reset();
+
+        const { serviceFileBuffer } = options;
 
         if (checkTypes.instance(buffer, Buffer) === false) {
             throw new Error("Missing or invalid parameter 'buffer'");
         }
+        if (serviceFileBuffer != null && checkTypes.instance(serviceFileBuffer, Buffer) === false) {
+            throw new Error("Missing or invalid parameter 'serviceFileBuffer'");
+        }
 
-        const geojsonFeatures = [];
         const yaixm = YAML.parse(buffer.toString('utf-8'));
+        // build options for createAirspaceFeatures
+        const createOptions = {};
+        if (serviceFileBuffer != null) {
+            // if services are given, use them as options and try to read them from file
+            createOptions.services = await YAML.parse(serviceFileBuffer.toString(), 'utf-8');
+        }
+        const geojsonFeatures = [];
         for (const airspace of yaixm.airspace) {
-            geojsonFeatures.push(...(await this.createAirspaceFeatures(airspace)));
+            geojsonFeatures.push(...(await this.createAirspaceFeatures(airspace, createOptions)));
         }
 
         const geojson = createFeatureCollection(geojsonFeatures);
@@ -129,10 +137,19 @@ class AirspaceConverter {
     }
 
     /**
+     * @param {Object} airspaceJson
+     * @param {Object} options
+     * @param {Object[]} [options.services] - Services to map to airspaces.
      * @return {Object}
      * @private
      */
-    async createAirspaceFeatures(airspaceJson) {
+    async createAirspaceFeatures(airspaceJson, options) {
+        const { services } = options;
+
+        if (services != null && checkTypes.nonEmptyObject(services) === false) {
+            throw new Error("Missing or invalid parameter 'services'");
+        }
+
         const features = [];
         const { name, id, type, localtype: localType, class: airspaceClass, geometry, rules } = airspaceJson;
         // set identifier for error messages
@@ -188,9 +205,9 @@ class AirspaceConverter {
                 },
                 geometry,
             };
-            // add frequency property if services file is configured and mapping property "id" is set
-            if (id != null && this.config.servicesFilePath) {
-                feature.properties.groundService = await this.createGroundServiceProperty(id);
+            // add frequency property if services are available and mapping property "id" is set
+            if (id != null && services != null) {
+                feature.properties.groundService = await this.createGroundServiceProperty(id, services);
             }
 
             features.push(cleanDeep(feature));
@@ -205,18 +222,21 @@ class AirspaceConverter {
      * Maps ground service frequency to airspace if possible. Will return null if no mapping is found.
      *
      * @param {string} id
+     * @param {Object[]} services
      * @return {Promise<Object|null>}
      * @private
      */
-    async createGroundServiceProperty(id) {
-        const exists = await fs.existsSync(this.config.servicesFilePath);
-        if (exists === false) {
-            throw new Error(`Configured airspace services file '${this.config.servicesFilePath}' does not exist.`);
+    async createGroundServiceProperty(id, services) {
+        if (checkTypes.nonEmptyString(id) === false) {
+            throw new Error("Missing or invalid parameter 'id'");
         }
+        if (checkTypes.nonEmptyObject(services) === false) {
+            throw new Error("Missing or invalid parameter 'services'");
+        }
+
         try {
             // read services file
-            const servicesJson = await YAML.parse(await fs.readFileSync(this.config.servicesFilePath, 'utf-8'));
-            for (const service of servicesJson.service) {
+            for (const service of services.service) {
                 const { callsign, controls, frequency } = service;
                 // airspace "id" is mapped to "controls"" in services file
                 if (controls?.includes(id)) {
@@ -230,7 +250,7 @@ class AirspaceConverter {
             return null;
         } catch (e) {
             // only warn if error
-            console.log(`WARN: Failed to read airspace services file '${this.config.servicesFilePath}'. ${e.message}`);
+            console.log(`WARN: Failed to map ground station services. ${e.message}`);
 
             return null;
         }
