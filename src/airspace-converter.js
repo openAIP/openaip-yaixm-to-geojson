@@ -200,7 +200,7 @@ class AirspaceConverter {
                         activity: 'NONE',
                         remarks: rules == null ? null : rules.join(', '),
                     },
-                    // merges additional fields like "activity"
+                    // merges updated field value for fields, e.g. "activity"
                     ...metaProps,
                 },
                 geometry,
