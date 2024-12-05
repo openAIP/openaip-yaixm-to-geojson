@@ -1,0 +1,9 @@
+*
+!schemas
+!src
+!license.txt
+!cli.js
+!index.js
+!package.json
+!package-lock.json
+!README.md

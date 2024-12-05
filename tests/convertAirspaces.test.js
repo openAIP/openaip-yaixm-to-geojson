@@ -1,4 +1,6 @@
 const { YaixmConverter } = require('../src/yaixm-converter');
+const viteTest = await import('vitest');
+const { describe, test, expect } = viteTest;
 
 // TODO add more tests
 
