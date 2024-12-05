@@ -1,6 +1,6 @@
 *
-!schemas
-!src
+!schemas/
+!src/
 !license.txt
 !cli.js
 !index.js
