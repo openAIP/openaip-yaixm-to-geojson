@@ -6,9 +6,7 @@
     "properties": {
         "type": {
             "type": "string",
-            "enum": [
-                "FeatureCollection"
-            ],
+            "enum": ["FeatureCollection"],
             "description": "A GeoJSON FeatureCollection object that contains all airspace features."
         },
         "features": {
@@ -20,9 +18,7 @@
                         "properties": {
                             "type": {
                                 "type": "string",
-                                "enum": [
-                                    "Feature"
-                                ]
+                                "enum": ["Feature"]
                             },
                             "properties": {
                                 "type": "object",
@@ -52,16 +48,7 @@
                                     },
                                     "class": {
                                         "type": "string",
-                                        "enum": [
-                                            "A",
-                                            "B",
-                                            "C",
-                                            "D",
-                                            "E",
-                                            "F",
-                                            "G",
-                                            "UNCLASSIFIED"
-                                        ],
+                                        "enum": ["A", "B", "C", "D", "E", "F", "G", "UNCLASSIFIED"],
                                         "description": "The airspace's class."
                                     },
                                     "activity": {
@@ -85,17 +72,17 @@
                                     "groundService": {
                                         "type": "object",
                                         "properties": {
-                                            "callsign": { "type": "string" , "example": "ABERDEEN APPROACH"},
+                                            "callsign": { "type": "string", "example": "ABERDEEN APPROACH" },
                                             "frequency": { "type": "string", "example": "118.000" }
                                         },
                                         "description": "The ground service callsign and frequency if available.",
-                                        "required": [
-                                            "callsign",
-                                            "frequency"
-                                        ],
+                                        "required": ["callsign", "frequency"],
                                         "additionalProperties": false
                                     },
-                                    "activatedByNotam": { "type": "boolean", "description": "If true, the airspace is activated by a NOTAM." },
+                                    "activatedByNotam": {
+                                        "type": "boolean",
+                                        "description": "If true, the airspace is activated by a NOTAM."
+                                    },
                                     "remarks": {
                                         "type": "string",
                                         "description": "A remarks field. If available, this will contain content of the parsed 'rules' list to add more metadata on the airspace."
@@ -117,9 +104,7 @@
                                 "properties": {
                                     "type": {
                                         "type": "string",
-                                        "enum": [
-                                            "Polygon"
-                                        ]
+                                        "enum": ["Polygon"]
                                     },
                                     "coordinates": {
                                         "type": "array",
@@ -149,51 +134,29 @@
                                         "maxItems": 1
                                     }
                                 },
-                                "required": [
-                                    "type",
-                                    "coordinates"
-                                ],
+                                "required": ["type", "coordinates"],
                                 "additionalProperties": false,
                                 "example": {
                                     "type": "Polygon",
                                     "coordinates": [
                                         [
-                                            [
-                                                9.1234,
-                                                45.42432
-                                            ],
-                                            [
-                                                10.1234,
-                                                45.42432
-                                            ],
-                                            [
-                                                10.1234,
-                                                47.42432
-                                            ],
-                                            [
-                                                9.1234,
-                                                45.42432
-                                            ]
+                                            [9.1234, 45.42432],
+                                            [10.1234, 45.42432],
+                                            [10.1234, 47.42432],
+                                            [9.1234, 45.42432]
                                         ]
                                     ]
                                 }
                             }
                         },
-                        "required": [
-                            "type",
-                            "properties",
-                            "geometry"
-                        ],
+                        "required": ["type", "properties", "geometry"],
                         "additionalProperties": false
                     }
                 ]
             }
         }
     },
-    "required": [
-        "type",
-        "features"
-    ],
+    "required": ["type", "features"],
     "additionalProperties": false,
     "definitions": {
         "verticalLimit": {
@@ -204,25 +167,14 @@
                 },
                 "unit": {
                     "type": "string",
-                    "enum": [
-                        "FT",
-                        "FL"
-                    ]
+                    "enum": ["FT", "FL"]
                 },
                 "referenceDatum": {
                     "type": "string",
-                    "enum": [
-                        "GND",
-                        "STD",
-                        "MSL"
-                    ]
+                    "enum": ["GND", "STD", "MSL"]
                 }
             },
-            "required": [
-                "value",
-                "unit",
-                "referenceDatum"
-            ],
+            "required": ["value", "unit", "referenceDatum"],
             "description": "Defines an airspace vertical limit. The vertical limit is a combination of an integer value, a measurement unit and a reference datum.",
             "additionalProperties": false
         }

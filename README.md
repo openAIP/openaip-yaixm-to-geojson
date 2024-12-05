@@ -1,7 +1,7 @@
 # YAIXM to GeoJSON Converter
 
 A utility that converts YAIXM format into GeoJSON for Node. This tool is intended to work with the YAIXM format
-used in the unofficial [UK Airspace Repository](https://github.com/ahsparrow/airspace). Currently, the logic only 
+used in the unofficial [UK Airspace Repository](https://github.com/ahsparrow/airspace). Currently, the logic only
 supports reading `airspace` YAIXM definitions.
 
 Internally, the logic uses parts of our [OpenAIR Parser](https://github.com/openAIP/openaip-openair-parser) to also validate the
@@ -352,14 +352,13 @@ Outputs a GeoJSON FeatureCollection with the following JSON schema:
 }
 ```
 
-Install
-=
+# Install
+
 ```shell
 npm install -g @openaip/yaixm-to-geojson
 ```
 
-Node
-=
+# Node
 
 ```javascript
 const { YaixmConverter } = require('@openaip/yaixm-to-geojson');
@@ -372,8 +371,7 @@ await converter.convertFromFile(inputFilepath, { type: 'airspace' });
 const geojson = converter.toGeojson();
 ```
 
-CLI
-=
+# CLI
 
 ```bash
 node cli.js -h

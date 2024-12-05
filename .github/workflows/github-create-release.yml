@@ -6,7 +6,7 @@ jobs:
     run-tests:
         # only run if specific '#build' tag is found in commit message
         if: contains(github.event.head_commit.message, '#build')
-        name: "Run tests"
+        name: 'Run tests'
         runs-on: ubuntu-22.04
         steps:
             - uses: actions/checkout@v4
@@ -19,14 +19,14 @@ jobs:
               with:
                   node-version: 22
                   registry-url: https://npm.pkg.github.com/
-                  scope: "@openaip"
+                  scope: '@openaip'
             - run: npm install
               name: Install packages
               env:
                   NODE_AUTH_TOKEN: ${{secrets.AUTOMATOR_DEVOPS_PAT}}
             - run: npm run test
     publish:
-        name: "Build and publish package"
+        name: 'Build and publish package'
         needs: run-tests
         runs-on: ubuntu-22.04
         steps:
@@ -50,12 +50,12 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.AUTOMATOR_DEVOPS_PAT }}
               with:
-                  major-wording: "#build-major"
-                  minor-wording: "#build-minor"
-                  patch-wording: "#build-patch"
+                  major-wording: '#build-major'
+                  minor-wording: '#build-minor'
+                  patch-wording: '#build-patch'
                   # use "patch" as default bump strategy
                   default: patch
-                  tag-prefix: "v"
+                  tag-prefix: 'v'
             - uses: actions/create-release@v1
               name: Create release
               env:

@@ -12,1243 +12,1242 @@
 # YAXIM project on GitLab at https://gitlab.com/ahsparrow/airspace.
 
 service:
-- callsign: ABERDEEN APPROACH
-  controls:
-  - aberdeen-cta
-  - aberdeen-ctr
-  frequency: 119.055
-
-- callsign: ANDREWSFIELD RADIO
-  controls:
-  - andrewsfield-atz
-  frequency: 130.555
-
-- callsign: BAGBY RADIO
-  controls:
-  - bagby-noatz
-  frequency: 123.255
-
-- callsign: BARTON INFORMATION
-  controls:
-  - barton-atz
-  frequency: 120.255
-
-- callsign: BECCLES RADIO
-  controls:
-  - beccles-noatz
-  frequency: 120.380
-
-- callsign: BEDFORD RADIO
-  controls:
-  - bedford-noatz
-  frequency: 119.030
-
-- callsign: BEMBRIDGE RADIO
-  controls:
-  - bembridge-noatz
-  frequency: 123.255
-
-- callsign: BENSON ZONE
-  controls:
-  - benson-atz
-  - benson-matz
-  frequency: 120.900
-
-- callsign: BEVERLEY RADIO
-  controls:
-  - beverley-noatz
-  frequency: 123.055
-
-- callsign: BIGGIN APPROACH
-  controls:
-  - biggin-atz
-  frequency: 129.405
-
-- callsign: BIRMINGHAM RADAR
-  controls:
-  - birmingham-cta
-  - birmingham-ctr
-  frequency: 123.980
-
-- callsign: BLACKBUSHE INFORMATION
-  controls:
-  - blackbushe-atz
-  frequency: 122.305
-
-- callsign: BLACKPOOL APPROACH
-  controls:
-  - blackpool-atz
-  frequency: 119.955
-
-- callsign: BODMIN RADIO
-  controls:
-  - bodmin-noatz
-  frequency: 120.330
-
-- callsign: BOSCOMBE ZONE
-  controls:
-  - boscombe-down-atz
-  - boscombe-down-matz
-  - boscombe-wallop-matz
-  - middle-wallop-atz
-  - middle-wallop-matz
-  frequency: 126.700
-
-- callsign: BOURN RADIO
-  controls:
-  - bourn-noatz
-  frequency: 124.355
-
-- callsign: BOURNEMOUTH APPROACH
-  controls:
-  - bournemouth-ctr
-  frequency: 119.480
-
-- callsign: BREIGHTON RADIO
-  controls:
-  - breighton-noatz
-  frequency: 129.805
-
-- callsign: BRIMPTON RADIO
-  controls:
-  - brimpton-noatz
-  frequency: 135.130
-
-- callsign: BRISTOL RADAR
-  controls:
-  - bristol-cta
-  - bristol-ctr
-  frequency: 125.650
-
-- callsign: BRIZE RADAR
-  controls:
-  - brize-ctr
-  - fairford-atz
-  frequency: 119.000
-
-- callsign: CAERNARFON RADIO
-  controls:
-  - caernarfon-atz
-  frequency: 122.255
-
-- callsign: CAMBRIDGE APPROACH
-  controls:
-  - cambridge-atz
-  - cambridge-raz
-  frequency: 120.965
-
-- callsign: CAMPBELTOWN INFORMATION
-  controls:
-  - campbeltown-atz
-  frequency: 125.905
-
-- callsign: CARDIFF APPROACH
-  controls:
-  - cardiff-cta
-  - cardiff-ctr
-  frequency: 119.155
-
-- callsign: CARLISLE RADIO
-  controls:
-  - carlisle-atz
-  frequency: 123.605
-
-- callsign: CHALGROVE RADIO
-  controls:
-  - chalgrove-noatz
-  frequency: 125.410
-
-- callsign: CHATTERIS RADIO
-  controls:
-  - chatteris-ul
-  frequency: 129.905
-
-- callsign: CHILTERN RADIO
-  controls:
-  - chiltern-park-dz
-  - chiltern-park-ul
-  frequency: 134.030
-
-- callsign: CLACTON RADIO
-  controls:
-  - clacton-noatz
-  frequency: 118.155
-
-- callsign: CLENCH RADIO
-  controls:
-  - clench-ul
-  frequency: 119.305
-
-- callsign: COLERNE APPROACH
-  controls:
-  - colerne-atz
-  frequency: 120.075
-
-- callsign: COLL RADIO
-  controls:
-  - coll-noatz
-  frequency: 125.005
-
-- callsign: COLONSAY RADIO
-  controls:
-  - colonsay-noatz
-  frequency: 123.805
-
-- callsign: COMPTON RADIO
-  controls:
-  - compton-atz
-  frequency: 122.710
-
-- callsign: CONINGSBY APPROACH
-  controls:
-  - coningsby-atz
-  - coningsby-matz
-  frequency: 119.200
-
-- callsign: CONINGTON RADIO
-  controls:
-  - conington-atz
-  frequency: 129.725
-
-- callsign: COSFORD APPROACH
-  controls:
-  - cosford-atz
-  frequency: 135.875
-
-- callsign: COVENTRY INFORMATION
-  controls:
-  - coventry-atz
-  frequency: 123.830
-
-- callsign: CRANFIELD APPROACH
-  controls:
-  - cranfield-atz
-  frequency: 122.855
-
-- callsign: CRANWELL APPROACH
-  controls:
-  - barkston-heath-atz
-  - barkston-cranwell-matz
-  - cranwell-atz
-  - cranwell-matz
-  frequency: 124.450
-
-- callsign: CULDROSE APPROACH
-  controls:
-  - culdrose-atz
-  - culdrose-matz
-  - predannack-atz
-  frequency: 134.050
-
-- callsign: CUMBERNAULD RADIO
-  controls:
-  - cumbernauld-atz
-  frequency: 120.605
-
-- callsign: DAMYNS RADIO
-  controls:
-  - damyns-noatz
-  frequency: 119.555
-
-- callsign: DEANLAND RADIO
-  controls:
-  - deanland-noatz
-  frequency: 129.730
-
-- callsign: DENHAM RADIO
-  controls:
-  - denham-atz
-  frequency: 130.730
-
-- callsign: DERBY RADIO
-  controls:
-  - derby-atz
-  frequency: 118.355
-
-- callsign: DUNDEE APPROACH
-  controls:
-  - dundee-atz
-  frequency: 122.905
-
-- callsign: DUNKESWELL RADIO
-  controls:
-  - dunkeswell-atz
-  frequency: 123.480
-
-- callsign: DUNSFOLD RADIO
-  controls:
-  - dunsfold-noatz
-  frequency: 119.105
-
-- callsign: TEESSIDE APPROACH
-  controls:
-  - teesside-cta
-  - teesside-ctr
-  frequency: 118.855
-
-- callsign: DUXFORD INFORMATION
-  controls:
-  - duxford-atz
-  frequency: 122.080
-
-- callsign: EAGLESCOTT RADIO
-  controls:
-  - eaglescott-noatz
-  frequency: 123.000
-
-- callsign: EARLS COLNE RADIO
-  controls:
-  - earls-colne-atz
-  frequency: 122.430
-
-- callsign: EAST FORTUNE RADIO
-  controls:
-  - east-fortune-ul
-  frequency: 118.755
-
-- callsign: EAST MIDLANDS RADAR
-  controls:
-  - east-midlands-cta
-  - east-midlands-ctr
-  - east-midlands-northern-box
-  - east-midlands-nottingham-box
-  - east-midlands-nottingham-keyworth-box
-  - east-midlands-keyworth-box
-  frequency: 134.180
-
-- callsign: EDINBURGH APPROACH
-  controls:
-  - edinburgh-cta
-  - edinburgh-ctr
-  frequency: 121.205
-
-- callsign: ELSTREE INFORMATION
-  controls:
-  - elstree-atz
-  frequency: 122.405
-
-- callsign: ENSTONE RADIO
-  controls:
-  - enstone-noatz
-  frequency: 129.880
-
-- callsign: EXETER APPROACH
-  controls:
-  - exeter-atz
-  frequency: 128.980
-
-- callsign: FAIROAKS INFORMATION
-  controls:
-  - fairoaks-atz
-  frequency: 123.430
-
-- callsign: FARNBOROUGH RADAR
-  controls:
-  - farnborough-ctr
-  - farnborough-cta
-  frequency: 133.440
-
-- callsign: FENLAND RADIO
-  controls:
-  - fenland-atz
-  frequency: 122.930
-
-- callsign: FENTON RADIO
-  controls:
-  - fenton-atz
-  frequency: 120.710
-
-- callsign: FLEETLANDS INFORMATION
-  controls:
-  - fleetlands-atz
-  frequency: 135.700
-
-- callsign: FOWLMERE RADIO
-  controls:
-  - fowlmere-noatz
-  frequency: 135.705
-
-- callsign: FULL SUTTON RADIO
-  controls:
-  - full-sutton-noatz
-  frequency: 120.105
-
-- callsign: GAMSTON RADIO
-  controls:
-  - gamston-atz
-  frequency: 130.480
-
-- callsign: GLASGOW APPROACH
-  controls:
-  - glasgow-cta
-  - glasgow-ctr
-  frequency: 119.100
-
-- callsign: GLOUCESTER APPROACH
-  controls:
-  - gloucester-atz
-  frequency: 128.555
-
-- callsign: GOODWOOD INFORMATION
-  controls:
-  - goodwood-atz
-  frequency: 122.455
-
-- callsign: GREAT OAKLEY RADIO
-  controls:
-  - great-oakley-noatz
-  frequency: 123.205
-
-- callsign: GROVE FARM RADIO
-  controls:
-  - grove-farm-ul
-  frequency: 130.430
-
-- callsign: HALFPENNY GREEN INFORMATION
-  controls:
-  - halfpenny-green-atz
-  frequency: 123.005
-
-- callsign: HALTON RADIO
-  controls:
-  - halton-atz
-  frequency: 130.425
-
-- callsign: HAVERFORDWEST RADIO
-  controls:
-  - haverfordwest-atz
-  frequency: 123.605
-
-- callsign: HAWARDEN RADAR
-  controls:
-  - hawarden-atz
-  - hawarden-rmz
-  frequency: 120.055
-
-- callsign: HEADCORN RADIO
-  controls:
-  - headcorn-atz
-  frequency: 122.210
-
-- callsign: HENSTRIDGE RADIO
-  controls:
-  - henstridge-noatz
-  frequency: 130.255
-
-- callsign: HUMBERSIDE RADAR
-  controls:
-  - humberside-atz
-  frequency: 119.130
-
-- callsign: INCE RADIO
-  controls:
-  - ince-ul
-  frequency: 121.080
-
-- callsign: INVERNESS APPROACH
-  controls:
-  - inverness-atz
-  frequency: 122.605
-
-- callsign: ISLAY INFORMATION
-  controls:
-  - islay-atz
-  frequency: 123.155
-
-- callsign: KEMBLE INFORMATION
-  controls:
-  - kemble-atz
-  frequency: 118.430
-
-- callsign: KIRBRIDE RADIO
-  controls:
-  - kirkbride-ul
-  frequency: 124.405
-
-- callsign: LAKENHEATH RADAR
-  controls:
-  - honington-atz
-  - lakenheath-atz
-  - lakenheath-mildenhall-matz
-  - mildenhall-atz
-  - mildenhall-matz
-  frequency: 128.900
-
-- callsign: LANDS END TOWER
-  controls:
-  - lands-end-atz
-  - lands-end-rmz
-  frequency: 120.255
-
-- callsign: LEE RADIO
-  controls:
-  - lee-on-solent-atz
-  frequency: 118.930
-
-- callsign: LEEDS APPROACH
-  controls:
-  - leeds-bradford-cta
-  - leeds-bradford-ctr
-  frequency: 134.580
-
-- callsign: LEEMING ZONE
-  controls:
-  - leeming-atz
-  - leeming-matz
-  - leeming-topcliffe-matz
-  - topcliffe-atz
-  frequency: 133.375
-
-- callsign: LEICESTER RADIO
-  controls:
-  - leicester-atz
-  frequency: 122.130
-
-- callsign: LEUCHARS RADAR
-  controls:
-  - leuchars-atz
-  - leuchars-matz
-  frequency: 126.500
-
-- callsign: LIVERPOOL APPROACH
-  controls:
-  - liverpool-cta
-  - liverpool-ctr
-  frequency: 119.855
-
-- callsign: LLANBEDR RADIO
-  controls:
-  - llanbedr-noatz
-  frequency: 118.930
-
-- callsign: LOSSIE RADAR
-  controls:
-  - kinloss-atz
-  - kinloss-lossiemouth-matz
-  - lossiemouth-atz
-  - lossiemouth-matz
-  frequency: 119.575
-
-- callsign: LYDD APPROACH
-  controls:
-  - lydd-atz
-  frequency: 120.705
-
-- callsign: MANCHESTER RADAR
-  controls:
-  - manchester-cta
-  - manchester-ctr
-  frequency: 118.580
-
-- callsign: MARHAM DIRECTOR
-  controls:
-  - marham-atz
-  - marham-matz
-  frequency: 124.150
-
-- callsign: MERRYFIELD TOWER
-  controls:
-  - merryfield-atz
-  - merryfield-matz
-  frequency: 122.100
-
-- callsign: NETHERAVON INFORMATION
-  controls:
-  - netheravon-atz
-  frequency: 128.300
-
-- callsign: NETHERTHORPE RADIO
-  controls:
-  - netherthorpe-atz
-  frequency: 123.280
-
-- callsign: NEWCASTLE APPROACH
-  controls:
-  - newcastle-cta
-  - newcastle-ctr
-  frequency: 124.380
-
-- callsign: NEWQUAY APPROACH
-  controls:
-  - newquay-atz
-  frequency: 133.405
-
-- callsign: NORTH WEALD RADIO
-  controls:
-  - north-weald-noatz
-  frequency: 123.530
-
-- callsign: NORWICH APPROACH
-  controls:
-  - norwich-cta
-  - norwich-ctr
-  frequency: 119.355
-
-- callsign: NOTTINGHAM RADIO
-  controls:
-  - nottingham-atz
-  frequency: 134.880
-
-- callsign: OAKSEY PARK RADIO
-  controls:
-  - oaksey-park-noatz
-  frequency: 132.230
-
-- callsign: OBAN INFORMATION
-  controls:
-  - oban-atz
-  frequency: 118.055
-
-- callsign: ODIHAM APPROACH
-  controls:
-  - odiham-atz
-  - odiham-matz
-  frequency: 131.300
-
-- callsign: OLD BUCKENHAM RADIO
-  controls:
-  - old-buckenham-atz
-  frequency: 124.405
-
-- callsign: OLD SARUM RADIO
-  controls:
-  - old-sarum-atz
-  frequency: 129.905
-
-- callsign: OLD WARDEN INFORMATION
-  controls:
-  - old-warden-atz
-  frequency: 130.705
-
-- callsign: OXFORD APPROACH
-  controls:
-  - oxford-atz
-  frequency: 125.090
-
-- callsign: PEMBREY RADIO
-  controls:
-  - pembrey-atz
-  frequency: 124.400
-
-- callsign: PERRANPORTH RADIO
-  controls:
-  - perranporth-noatz
-  frequency: 119.755
-
-- callsign: PERTH RADIO
-  controls:
-  - perth-atz
-  frequency: 121.080
-
-- callsign: POPHAM RADIO
-  controls:
-  - popham-noatz
-  frequency: 129.805
-
-- callsign: PRESTWICK APPROACH
-  controls:
-  - prestwick-cta
-  - prestwick-ctr
-  frequency: 129.450
-
-- callsign: REDHILL INFORMATION
-  controls:
-  - redhill-atz
-  frequency: 119.605
-
-- callsign: ROCHESTER INFORMATION
-  controls:
-  - rochester-atz
-  frequency: 122.255
-
-- callsign: ROUGHAM RADIO
-  controls:
-  - rougham-noatz
-  frequency: 123.165
-
-- callsign: SANDOWN RADIO
-  controls:
-  - sandown-noatz
-  frequency: 119.280
-
-- callsign: SANDTOFT RADIO
-  controls:
-  - sandtoft-atz
-  frequency: 130.415
-
-- callsign: SEETHING RADIO
-  controls:
-  - seething-noatz
-  frequency: 122.605
-
-- callsign: SHACKLEWELL RADIO
-  controls:
-  - shacklewell-noatz
-  frequency: 128.380
-
-- callsign: SHAWBURY ZONE
-  controls:
-  - shawbury-atz
-  - shawbury-glider
-  - shawbury-matz
-  - shawbury-ternhill-matz
-  - ternhill-atz
-  frequency: 133.150
-
-- callsign: SHERBURN RADIO
-  controls:
-  - sherburn-atz
-  frequency: 122.610
-
-- callsign: SHIPDHAM RADIO
-  controls:
-  - shipdham-noatz
-  frequency: 132.255
-
-- callsign: SHOBDON INFORMATION
-  controls:
-  - shobdon-atz
-  frequency: 118.155
-
-- callsign: SHOREHAM APPROACH
-  controls:
-  - shoreham-atz
-  frequency: 123.155
-
-- callsign: SIBSON RADIO
-  controls:
-  - sibson-noatz
-  frequency: 120.330
-
-- callsign: SKEGNESS RADIO
-  controls:
-  - skegness-noatz
-  frequency: 132.430
-
-- callsign: SLEAP RADIO
-  controls:
-  - sleap-atz
-  frequency: 122.455
-
-- callsign: SOUTHAMPTON RADAR
-  controls:
-  - southampton-ctr
-  - solent-cta
-  frequency: 120.230
-
-- callsign: SOUTHEND APPROACH
-  controls:
-  - southend-cta
-  - southend-ctr
-  frequency: 130.780
-
-- callsign: STAPLEFORD RADIO
-  controls:
-  - stapleford-atz
-  frequency: 122.805
-
-- callsign: STURGATE RADIO
-  controls:
-  - sturgate-noatz
-  frequency: 130.305
-
-- callsign: SWANSEA RADIO
-  controls:
-  - swansea-atz
-  frequency: 119.705
-
-- callsign: SYERSTON RADIO
-  controls:
-  - syerston-atz
-  frequency: 128.525
-
-- callsign: SYWELL RADIO
-  controls:
-  - sywell-atz
-  frequency: 122.705
-
-- callsign: TATENHILL RADIO
-  controls:
-  - tatenhill-atz
-  frequency: 124.080
-
-- callsign: THRUXTON RADIO
-  controls:
-  - thruxton-atz
-  frequency: 118.280
-
-- callsign: TILSTOCK RADIO
-  controls:
-  - tilstock-noatz
-  frequency: 118.105
-
-- callsign: TURWESTON RADIO
-  controls:
-  - turweston-noatz
-  frequency: 122.180
-
-- callsign: VALLEY RADAR
-  controls:
-  - mona-atz
-  - mona-valley-matz
-  - valley-atz
-  - valley-matz
-  frequency: 125.225
-
-- callsign: WADDINGTON ZONE
-  controls:
-  - waddington-atz
-  - waddington-matz
-  frequency: 119.500
-
-- callsign: WALNEY INFORMATION
-  controls:
-  - walney-atz
-  frequency: 123.205
-
-- callsign: WALTHAM RADIO
-  controls:
-  - white-waltham-atz
-  frequency: 122.605
-
-- callsign: WARTON RADAR
-  controls:
-  - warton-atz
-  - warton-matz
-  frequency: 129.530
-
-- callsign: WATTISHAM APPROACH
-  controls:
-  - wattisham-atz
-  - wattisham-matz
-  frequency: 125.800
-
-- callsign: WELLESBOURNE INFORMATION
-  controls:
-  - wellesbourne-atz
-  frequency: 124.030
-
-- callsign: WELSHPOOL RADIO
-  controls:
-  - welshpool-atz
-  frequency: 128.005
-
-- callsign: WEST WALES INFORMATION
-  controls:
-  - west-wales-atz
-  frequency: 122.155
-
-- callsign: WICK APPROACH
-  controls:
-  - wick-atz
-  frequency: 119.705
-
-- callsign: WICKENBY RADIO
-  controls:
-  - wickenby-atz
-  frequency: 122.455
-
-- callsign: WITTERING ZONE
-  controls:
-  - wittering-atz
-  - wittering-matz
-  frequency: 119.675
-
-- callsign: WOODVALE APPROACH
-  controls:
-  - woodvale-atz
-  frequency: 121.000
-
-- callsign: WYCOMBE TOWER
-  controls:
-  - wycombe-atz
-  frequency: 126.555
-
-- callsign: YEOVIL APPROACH
-  controls:
-  - yeovil-atz
-  frequency: 130.805
-
-- callsign: YEOVILTON RADAR
-  controls:
-  - yeovilton-atz
-  - yeovilton-matz
-  frequency: 127.350
-
-#-----------------------------------------------------------------------
-# Civil gliding
-
-- callsign: ABOYNE RADIO
-  controls:
-  - aboyne-glider
-  frequency: 130.105
-
-- callsign: ASTON DOWN RADIO
-  controls:
-  - aston-down-glider
-  frequency: 129.980
-
-- callsign: WALNEY RADIO
-  controls:
-  - walney-glider
-  frequency: 129.980
-
-- callsign: BEMBRIDGE RADIO
-  controls:
-  - bembridge-glider
-  frequency: 123.255
-
-- callsign: BICESTER RADIO
-  controls:
-  - bicester-glider
-  frequency: 135.480
-
-- callsign: BIDFORD RADIO
-  controls:
-  - bidford-glider
-  frequency: 118.685
-
-- callsign: BOGNOR REGIS RADIO
-  controls:
-  - bognor-regis-glider
-  frequency: 129.980
-
-- callsign: BOOKER RADIO
-  controls:
-  - booker-glider
-  frequency: 126.555
-
-- callsign: BRENT TOR RADIO
-  controls:
-  - brent-tor-glider
-  frequency: 130.105
-
-- callsign: BURN RADIO
-  controls:
-  - burn-glider
-  frequency: 129.980
-
-- callsign: CAMPHILL RADIO
-  controls:
-  - camphill-glider
-  frequency: 129.980
-
-- callsign: CHALLOCK RADIO
-  controls:
-  - challock-glider
-  frequency: 118.685
-
-- callsign: CHIPPING RADIO
-  controls:
-  - chipping-glider
-  frequency: 118.685
-
-- callsign: CRANWELL RADIO
-  controls:
-  - cranwell-glider
-  frequency: 129.980
-
-- callsign: CROWLAND RADIO
-  controls:
-  - crowland-glider
-  frequency: 129.980
-
-- callsign: CULDROSE RADIO
-  controls:
-  - culdrose-glider
-  frequency: 134.050
-
-- callsign: CURROCK HILL RADIO
-  controls:
-  - currock-hill-glider
-  frequency: 130.130
-
-- callsign: DARLTON RADIO
-  controls:
-  - darlton-glider
-  frequency: 118.685
-
-- callsign: DUNSTABLE RADIO
-  controls:
-  - dunstable-glider
-  frequency: 119.905
-
-- callsign: EAGLESCOTT RADIO
-  controls:
-  - eaglescott-glider
-  frequency: 123.000
-
-- callsign: EASTERTON RADIO
-  controls:
-  - easterton-glider
-  frequency: 130.105
-
-- callsign: EDGE HILL RADIO
-  controls:
-  - edge-hill-glider
-  frequency: 129.980
-
-- callsign: EYRES FIELD RADIO
-  controls:
-  - eyres-field-glider
-  frequency: 129.980
-
-- callsign: FALGUNZEON RADIO
-  controls:
-  - falgunzeon-glider
-  frequency: 129.980
-
-- callsign: FESHIEBRIDGE RADIO
-  controls:
-  - feshiebridge-glider
-  frequency: 118.685
-
-- callsign: GRANSDEN LODGE RADIO
-  controls:
-  - gransden-lodge-glider
-  frequency: 131.280
-
-- callsign: HALESLAND RADIO
-  controls:
-  - halesland-glider
-  frequency: 129.980
-
-- callsign: HINTON RADIO
-  controls:
-  - hinton-in-the-hedges-glider
-  frequency: 119.455
-
-- callsign: HUSBANDS BOSWORTH RADIO
-  controls:
-  - husbands-bosworth-glider
-  frequency: 127.580
-
-- callsign: KEEVIL RADIO
-  controls:
-  - keevil-glider
-  frequency: 129.980
-
-- callsign: KIRTON RADIO
-  controls:
-  - kirton-in-lindsey-glider
-  frequency: 129.980
-
-- callsign: LASHAM RADIO
-  controls:
-  - lasham-glider
-  frequency: 131.030
-
-- callsign: LLANTISILIO RADIO
-  controls:
-  - llantisilio-glider
-  frequency: 129.980
-
-- callsign: LLEWENI PARC RADIO
-  controls:
-  - lleweni-parc-glider
-  frequency: 129.980
-
-- callsign: LONG MYND RADIO
-  controls:
-  - long-mynd-glider
-  frequency: 129.980
-
-- callsign: LYVEDEN RADIO
-  controls:
-  - lyveden-glider
-  frequency: 129.980
-
-- callsign: MARHAM RADIO
-  controls:
-  - marham-glider
-  frequency: 124.150
-
-- callsign: MILFIELD RADIO
-  controls:
-  - milfield-glider
-  frequency: 130.105
-
-- callsign: NORTH HILL RADIO
-  controls:
-  - north-hill-glider
-  frequency: 129.905
-
-- callsign: NYMPSFIELD RADIO
-  controls:
-  - nympsfield-glider
-  frequency: 129.980
-
-- callsign: OBAN RADIO
-  controls:
-  - oban-glider
-  frequency: 118.055
-
-- callsign: PARHAM RADIO
-  controls:
-  - parham-glider
-  frequency: 118.685
-
-- callsign: POCKLINGTON RADIO
-  controls:
-  - pocklington-glider
-  frequency: 118.685
-
-- callsign: PORTMOAK RADIO
-  controls:
-  - portmoak-glider
-  frequency: 129.980
-
-- callsign: RATTLESDEN RADIO
-  controls:
-  - rattlesden-glider
-  frequency: 129.980
-
-- callsign: RIDGEWELL RADIO
-  controls:
-  - ridgewell-glider
-  frequency: 129.980
-
-- callsign: RINGMER RADIO
-  controls:
-  - ringmer-glider
-  frequency: 129.980
-
-- callsign: RIVAR HILL RADIO
-  controls:
-  - rivar-hill-glider
-  frequency: 129.980
-
-- callsign: RUFFORTH RADIO
-  controls:
-  - rufforth-glider
-  frequency: 129.980
-
-- callsign: SACKVILLE LODGE RADIO
-  controls:
-  - sackville-lodge-glider
-  frequency: 135.480
-
-- callsign: SALTBY RADIO
-  controls:
-  - saltby-glider
-  frequency: 129.980
-
-- callsign: SANDHILL FARM RADIO
-  controls:
-  - sandhill-farm-glider
-  frequency: 129.980
-
-- callsign: SEIGHFORD RADIO
-  controls:
-  - seighford-glider
-  frequency: 129.980
-
-- callsign: SHOBDON RADIO
-  controls:
-  - shobdon-glider
-  frequency: 118.155
-
-- callsign: SKELLING FARM RADIO
-  controls:
-  - skelling-farm-glider
-  frequency: 129.980
-
-- callsign: SLEAP RADIO
-  controls:
-  - sleap-glider
-  frequency: 122.455
-
-- callsign: SNITTERFIELD RADIO
-  controls:
-  - snitterfield-glider
-  frequency: 129.980
-
-- callsign: STRUBBY RADIO
-  controls:
-  - strubby-glider
-  frequency: 129.980
-
-- callsign: SUTTON BANK RADIO
-  controls:
-  - sutton-bank-glider
-  frequency: 118.685
-
-- callsign: TALGARTH RADIO
-  controls:
-  - talgarth-glider
-  frequency: 118.685
-
-- callsign: THE PARK RADIO
-  controls:
-  - the-park-glider
-  frequency: 118.685
-
-- callsign: TIBENHAM RADIO
-  controls:
-  - tibenham-glider
-  frequency: 129.980
-
-- callsign: UPWOOD RADIO
-  controls:
-  - upwood-glider
-  frequency: 129.980
-
-- callsign: USK RADIO
-  controls:
-  - usk-glider
-  frequency: 129.980
-
-- callsign: WATTISHAM RADIO
-  controls:
-  - wattisham-glider
-  frequency: 125.800
-
-- callsign: WESTON RADIO
-  controls:
-  - weston-on-the-green-glider
-  frequency: 129.980
-
-- callsign: WORMINGFORD RADIO
-  controls:
-  - wormingford-glider
-  frequency: 129.980
-
-- callsign: YEOVILTON RADIO
-  controls:
-  - yeovilton-glider
-  frequency: 127.350
-
-#-----------------------------------------------------------------------
-# Military gliding
-
-- callsign: COSFORD RADIO
-  controls:
-  - cosford-glider
-  frequency: 135.875
-
-- callsign: HALTON RADIO
-  controls:
-  - halton-glider
-  frequency: 130.425
-
-- callsign: KENLEY RADIO
-  controls:
-  - kenley-glider
-  frequency: 119.760
-
-- callsign: LITTLE RISSINGTON RADIO
-  controls:
-  - little-rissington-glider
-  - little-rissington-atz
-  frequency: 120.775
-
-- callsign: ODIHAM RADIO
-  controls:
-  - odiham-glider
-  frequency: 131.300
-
-- callsign: UPAVON RADIO
-  controls:
-  - upavon-glider
-  frequency: 124.100
-
+    - callsign: ABERDEEN APPROACH
+      controls:
+          - aberdeen-cta
+          - aberdeen-ctr
+      frequency: 119.055
+
+    - callsign: ANDREWSFIELD RADIO
+      controls:
+          - andrewsfield-atz
+      frequency: 130.555
+
+    - callsign: BAGBY RADIO
+      controls:
+          - bagby-noatz
+      frequency: 123.255
+
+    - callsign: BARTON INFORMATION
+      controls:
+          - barton-atz
+      frequency: 120.255
+
+    - callsign: BECCLES RADIO
+      controls:
+          - beccles-noatz
+      frequency: 120.380
+
+    - callsign: BEDFORD RADIO
+      controls:
+          - bedford-noatz
+      frequency: 119.030
+
+    - callsign: BEMBRIDGE RADIO
+      controls:
+          - bembridge-noatz
+      frequency: 123.255
+
+    - callsign: BENSON ZONE
+      controls:
+          - benson-atz
+          - benson-matz
+      frequency: 120.900
+
+    - callsign: BEVERLEY RADIO
+      controls:
+          - beverley-noatz
+      frequency: 123.055
+
+    - callsign: BIGGIN APPROACH
+      controls:
+          - biggin-atz
+      frequency: 129.405
+
+    - callsign: BIRMINGHAM RADAR
+      controls:
+          - birmingham-cta
+          - birmingham-ctr
+      frequency: 123.980
+
+    - callsign: BLACKBUSHE INFORMATION
+      controls:
+          - blackbushe-atz
+      frequency: 122.305
+
+    - callsign: BLACKPOOL APPROACH
+      controls:
+          - blackpool-atz
+      frequency: 119.955
+
+    - callsign: BODMIN RADIO
+      controls:
+          - bodmin-noatz
+      frequency: 120.330
+
+    - callsign: BOSCOMBE ZONE
+      controls:
+          - boscombe-down-atz
+          - boscombe-down-matz
+          - boscombe-wallop-matz
+          - middle-wallop-atz
+          - middle-wallop-matz
+      frequency: 126.700
+
+    - callsign: BOURN RADIO
+      controls:
+          - bourn-noatz
+      frequency: 124.355
+
+    - callsign: BOURNEMOUTH APPROACH
+      controls:
+          - bournemouth-ctr
+      frequency: 119.480
+
+    - callsign: BREIGHTON RADIO
+      controls:
+          - breighton-noatz
+      frequency: 129.805
+
+    - callsign: BRIMPTON RADIO
+      controls:
+          - brimpton-noatz
+      frequency: 135.130
+
+    - callsign: BRISTOL RADAR
+      controls:
+          - bristol-cta
+          - bristol-ctr
+      frequency: 125.650
+
+    - callsign: BRIZE RADAR
+      controls:
+          - brize-ctr
+          - fairford-atz
+      frequency: 119.000
+
+    - callsign: CAERNARFON RADIO
+      controls:
+          - caernarfon-atz
+      frequency: 122.255
+
+    - callsign: CAMBRIDGE APPROACH
+      controls:
+          - cambridge-atz
+          - cambridge-raz
+      frequency: 120.965
+
+    - callsign: CAMPBELTOWN INFORMATION
+      controls:
+          - campbeltown-atz
+      frequency: 125.905
+
+    - callsign: CARDIFF APPROACH
+      controls:
+          - cardiff-cta
+          - cardiff-ctr
+      frequency: 119.155
+
+    - callsign: CARLISLE RADIO
+      controls:
+          - carlisle-atz
+      frequency: 123.605
+
+    - callsign: CHALGROVE RADIO
+      controls:
+          - chalgrove-noatz
+      frequency: 125.410
+
+    - callsign: CHATTERIS RADIO
+      controls:
+          - chatteris-ul
+      frequency: 129.905
+
+    - callsign: CHILTERN RADIO
+      controls:
+          - chiltern-park-dz
+          - chiltern-park-ul
+      frequency: 134.030
+
+    - callsign: CLACTON RADIO
+      controls:
+          - clacton-noatz
+      frequency: 118.155
+
+    - callsign: CLENCH RADIO
+      controls:
+          - clench-ul
+      frequency: 119.305
+
+    - callsign: COLERNE APPROACH
+      controls:
+          - colerne-atz
+      frequency: 120.075
+
+    - callsign: COLL RADIO
+      controls:
+          - coll-noatz
+      frequency: 125.005
+
+    - callsign: COLONSAY RADIO
+      controls:
+          - colonsay-noatz
+      frequency: 123.805
+
+    - callsign: COMPTON RADIO
+      controls:
+          - compton-atz
+      frequency: 122.710
+
+    - callsign: CONINGSBY APPROACH
+      controls:
+          - coningsby-atz
+          - coningsby-matz
+      frequency: 119.200
+
+    - callsign: CONINGTON RADIO
+      controls:
+          - conington-atz
+      frequency: 129.725
+
+    - callsign: COSFORD APPROACH
+      controls:
+          - cosford-atz
+      frequency: 135.875
+
+    - callsign: COVENTRY INFORMATION
+      controls:
+          - coventry-atz
+      frequency: 123.830
+
+    - callsign: CRANFIELD APPROACH
+      controls:
+          - cranfield-atz
+      frequency: 122.855
+
+    - callsign: CRANWELL APPROACH
+      controls:
+          - barkston-heath-atz
+          - barkston-cranwell-matz
+          - cranwell-atz
+          - cranwell-matz
+      frequency: 124.450
+
+    - callsign: CULDROSE APPROACH
+      controls:
+          - culdrose-atz
+          - culdrose-matz
+          - predannack-atz
+      frequency: 134.050
+
+    - callsign: CUMBERNAULD RADIO
+      controls:
+          - cumbernauld-atz
+      frequency: 120.605
+
+    - callsign: DAMYNS RADIO
+      controls:
+          - damyns-noatz
+      frequency: 119.555
+
+    - callsign: DEANLAND RADIO
+      controls:
+          - deanland-noatz
+      frequency: 129.730
+
+    - callsign: DENHAM RADIO
+      controls:
+          - denham-atz
+      frequency: 130.730
+
+    - callsign: DERBY RADIO
+      controls:
+          - derby-atz
+      frequency: 118.355
+
+    - callsign: DUNDEE APPROACH
+      controls:
+          - dundee-atz
+      frequency: 122.905
+
+    - callsign: DUNKESWELL RADIO
+      controls:
+          - dunkeswell-atz
+      frequency: 123.480
+
+    - callsign: DUNSFOLD RADIO
+      controls:
+          - dunsfold-noatz
+      frequency: 119.105
+
+    - callsign: TEESSIDE APPROACH
+      controls:
+          - teesside-cta
+          - teesside-ctr
+      frequency: 118.855
+
+    - callsign: DUXFORD INFORMATION
+      controls:
+          - duxford-atz
+      frequency: 122.080
+
+    - callsign: EAGLESCOTT RADIO
+      controls:
+          - eaglescott-noatz
+      frequency: 123.000
+
+    - callsign: EARLS COLNE RADIO
+      controls:
+          - earls-colne-atz
+      frequency: 122.430
+
+    - callsign: EAST FORTUNE RADIO
+      controls:
+          - east-fortune-ul
+      frequency: 118.755
+
+    - callsign: EAST MIDLANDS RADAR
+      controls:
+          - east-midlands-cta
+          - east-midlands-ctr
+          - east-midlands-northern-box
+          - east-midlands-nottingham-box
+          - east-midlands-nottingham-keyworth-box
+          - east-midlands-keyworth-box
+      frequency: 134.180
+
+    - callsign: EDINBURGH APPROACH
+      controls:
+          - edinburgh-cta
+          - edinburgh-ctr
+      frequency: 121.205
+
+    - callsign: ELSTREE INFORMATION
+      controls:
+          - elstree-atz
+      frequency: 122.405
+
+    - callsign: ENSTONE RADIO
+      controls:
+          - enstone-noatz
+      frequency: 129.880
+
+    - callsign: EXETER APPROACH
+      controls:
+          - exeter-atz
+      frequency: 128.980
+
+    - callsign: FAIROAKS INFORMATION
+      controls:
+          - fairoaks-atz
+      frequency: 123.430
+
+    - callsign: FARNBOROUGH RADAR
+      controls:
+          - farnborough-ctr
+          - farnborough-cta
+      frequency: 133.440
+
+    - callsign: FENLAND RADIO
+      controls:
+          - fenland-atz
+      frequency: 122.930
+
+    - callsign: FENTON RADIO
+      controls:
+          - fenton-atz
+      frequency: 120.710
+
+    - callsign: FLEETLANDS INFORMATION
+      controls:
+          - fleetlands-atz
+      frequency: 135.700
+
+    - callsign: FOWLMERE RADIO
+      controls:
+          - fowlmere-noatz
+      frequency: 135.705
+
+    - callsign: FULL SUTTON RADIO
+      controls:
+          - full-sutton-noatz
+      frequency: 120.105
+
+    - callsign: GAMSTON RADIO
+      controls:
+          - gamston-atz
+      frequency: 130.480
+
+    - callsign: GLASGOW APPROACH
+      controls:
+          - glasgow-cta
+          - glasgow-ctr
+      frequency: 119.100
+
+    - callsign: GLOUCESTER APPROACH
+      controls:
+          - gloucester-atz
+      frequency: 128.555
+
+    - callsign: GOODWOOD INFORMATION
+      controls:
+          - goodwood-atz
+      frequency: 122.455
+
+    - callsign: GREAT OAKLEY RADIO
+      controls:
+          - great-oakley-noatz
+      frequency: 123.205
+
+    - callsign: GROVE FARM RADIO
+      controls:
+          - grove-farm-ul
+      frequency: 130.430
+
+    - callsign: HALFPENNY GREEN INFORMATION
+      controls:
+          - halfpenny-green-atz
+      frequency: 123.005
+
+    - callsign: HALTON RADIO
+      controls:
+          - halton-atz
+      frequency: 130.425
+
+    - callsign: HAVERFORDWEST RADIO
+      controls:
+          - haverfordwest-atz
+      frequency: 123.605
+
+    - callsign: HAWARDEN RADAR
+      controls:
+          - hawarden-atz
+          - hawarden-rmz
+      frequency: 120.055
+
+    - callsign: HEADCORN RADIO
+      controls:
+          - headcorn-atz
+      frequency: 122.210
+
+    - callsign: HENSTRIDGE RADIO
+      controls:
+          - henstridge-noatz
+      frequency: 130.255
+
+    - callsign: HUMBERSIDE RADAR
+      controls:
+          - humberside-atz
+      frequency: 119.130
+
+    - callsign: INCE RADIO
+      controls:
+          - ince-ul
+      frequency: 121.080
+
+    - callsign: INVERNESS APPROACH
+      controls:
+          - inverness-atz
+      frequency: 122.605
+
+    - callsign: ISLAY INFORMATION
+      controls:
+          - islay-atz
+      frequency: 123.155
+
+    - callsign: KEMBLE INFORMATION
+      controls:
+          - kemble-atz
+      frequency: 118.430
+
+    - callsign: KIRBRIDE RADIO
+      controls:
+          - kirkbride-ul
+      frequency: 124.405
+
+    - callsign: LAKENHEATH RADAR
+      controls:
+          - honington-atz
+          - lakenheath-atz
+          - lakenheath-mildenhall-matz
+          - mildenhall-atz
+          - mildenhall-matz
+      frequency: 128.900
+
+    - callsign: LANDS END TOWER
+      controls:
+          - lands-end-atz
+          - lands-end-rmz
+      frequency: 120.255
+
+    - callsign: LEE RADIO
+      controls:
+          - lee-on-solent-atz
+      frequency: 118.930
+
+    - callsign: LEEDS APPROACH
+      controls:
+          - leeds-bradford-cta
+          - leeds-bradford-ctr
+      frequency: 134.580
+
+    - callsign: LEEMING ZONE
+      controls:
+          - leeming-atz
+          - leeming-matz
+          - leeming-topcliffe-matz
+          - topcliffe-atz
+      frequency: 133.375
+
+    - callsign: LEICESTER RADIO
+      controls:
+          - leicester-atz
+      frequency: 122.130
+
+    - callsign: LEUCHARS RADAR
+      controls:
+          - leuchars-atz
+          - leuchars-matz
+      frequency: 126.500
+
+    - callsign: LIVERPOOL APPROACH
+      controls:
+          - liverpool-cta
+          - liverpool-ctr
+      frequency: 119.855
+
+    - callsign: LLANBEDR RADIO
+      controls:
+          - llanbedr-noatz
+      frequency: 118.930
+
+    - callsign: LOSSIE RADAR
+      controls:
+          - kinloss-atz
+          - kinloss-lossiemouth-matz
+          - lossiemouth-atz
+          - lossiemouth-matz
+      frequency: 119.575
+
+    - callsign: LYDD APPROACH
+      controls:
+          - lydd-atz
+      frequency: 120.705
+
+    - callsign: MANCHESTER RADAR
+      controls:
+          - manchester-cta
+          - manchester-ctr
+      frequency: 118.580
+
+    - callsign: MARHAM DIRECTOR
+      controls:
+          - marham-atz
+          - marham-matz
+      frequency: 124.150
+
+    - callsign: MERRYFIELD TOWER
+      controls:
+          - merryfield-atz
+          - merryfield-matz
+      frequency: 122.100
+
+    - callsign: NETHERAVON INFORMATION
+      controls:
+          - netheravon-atz
+      frequency: 128.300
+
+    - callsign: NETHERTHORPE RADIO
+      controls:
+          - netherthorpe-atz
+      frequency: 123.280
+
+    - callsign: NEWCASTLE APPROACH
+      controls:
+          - newcastle-cta
+          - newcastle-ctr
+      frequency: 124.380
+
+    - callsign: NEWQUAY APPROACH
+      controls:
+          - newquay-atz
+      frequency: 133.405
+
+    - callsign: NORTH WEALD RADIO
+      controls:
+          - north-weald-noatz
+      frequency: 123.530
+
+    - callsign: NORWICH APPROACH
+      controls:
+          - norwich-cta
+          - norwich-ctr
+      frequency: 119.355
+
+    - callsign: NOTTINGHAM RADIO
+      controls:
+          - nottingham-atz
+      frequency: 134.880
+
+    - callsign: OAKSEY PARK RADIO
+      controls:
+          - oaksey-park-noatz
+      frequency: 132.230
+
+    - callsign: OBAN INFORMATION
+      controls:
+          - oban-atz
+      frequency: 118.055
+
+    - callsign: ODIHAM APPROACH
+      controls:
+          - odiham-atz
+          - odiham-matz
+      frequency: 131.300
+
+    - callsign: OLD BUCKENHAM RADIO
+      controls:
+          - old-buckenham-atz
+      frequency: 124.405
+
+    - callsign: OLD SARUM RADIO
+      controls:
+          - old-sarum-atz
+      frequency: 129.905
+
+    - callsign: OLD WARDEN INFORMATION
+      controls:
+          - old-warden-atz
+      frequency: 130.705
+
+    - callsign: OXFORD APPROACH
+      controls:
+          - oxford-atz
+      frequency: 125.090
+
+    - callsign: PEMBREY RADIO
+      controls:
+          - pembrey-atz
+      frequency: 124.400
+
+    - callsign: PERRANPORTH RADIO
+      controls:
+          - perranporth-noatz
+      frequency: 119.755
+
+    - callsign: PERTH RADIO
+      controls:
+          - perth-atz
+      frequency: 121.080
+
+    - callsign: POPHAM RADIO
+      controls:
+          - popham-noatz
+      frequency: 129.805
+
+    - callsign: PRESTWICK APPROACH
+      controls:
+          - prestwick-cta
+          - prestwick-ctr
+      frequency: 129.450
+
+    - callsign: REDHILL INFORMATION
+      controls:
+          - redhill-atz
+      frequency: 119.605
+
+    - callsign: ROCHESTER INFORMATION
+      controls:
+          - rochester-atz
+      frequency: 122.255
+
+    - callsign: ROUGHAM RADIO
+      controls:
+          - rougham-noatz
+      frequency: 123.165
+
+    - callsign: SANDOWN RADIO
+      controls:
+          - sandown-noatz
+      frequency: 119.280
+
+    - callsign: SANDTOFT RADIO
+      controls:
+          - sandtoft-atz
+      frequency: 130.415
+
+    - callsign: SEETHING RADIO
+      controls:
+          - seething-noatz
+      frequency: 122.605
+
+    - callsign: SHACKLEWELL RADIO
+      controls:
+          - shacklewell-noatz
+      frequency: 128.380
+
+    - callsign: SHAWBURY ZONE
+      controls:
+          - shawbury-atz
+          - shawbury-glider
+          - shawbury-matz
+          - shawbury-ternhill-matz
+          - ternhill-atz
+      frequency: 133.150
+
+    - callsign: SHERBURN RADIO
+      controls:
+          - sherburn-atz
+      frequency: 122.610
+
+    - callsign: SHIPDHAM RADIO
+      controls:
+          - shipdham-noatz
+      frequency: 132.255
+
+    - callsign: SHOBDON INFORMATION
+      controls:
+          - shobdon-atz
+      frequency: 118.155
+
+    - callsign: SHOREHAM APPROACH
+      controls:
+          - shoreham-atz
+      frequency: 123.155
+
+    - callsign: SIBSON RADIO
+      controls:
+          - sibson-noatz
+      frequency: 120.330
+
+    - callsign: SKEGNESS RADIO
+      controls:
+          - skegness-noatz
+      frequency: 132.430
+
+    - callsign: SLEAP RADIO
+      controls:
+          - sleap-atz
+      frequency: 122.455
+
+    - callsign: SOUTHAMPTON RADAR
+      controls:
+          - southampton-ctr
+          - solent-cta
+      frequency: 120.230
+
+    - callsign: SOUTHEND APPROACH
+      controls:
+          - southend-cta
+          - southend-ctr
+      frequency: 130.780
+
+    - callsign: STAPLEFORD RADIO
+      controls:
+          - stapleford-atz
+      frequency: 122.805
+
+    - callsign: STURGATE RADIO
+      controls:
+          - sturgate-noatz
+      frequency: 130.305
+
+    - callsign: SWANSEA RADIO
+      controls:
+          - swansea-atz
+      frequency: 119.705
+
+    - callsign: SYERSTON RADIO
+      controls:
+          - syerston-atz
+      frequency: 128.525
+
+    - callsign: SYWELL RADIO
+      controls:
+          - sywell-atz
+      frequency: 122.705
+
+    - callsign: TATENHILL RADIO
+      controls:
+          - tatenhill-atz
+      frequency: 124.080
+
+    - callsign: THRUXTON RADIO
+      controls:
+          - thruxton-atz
+      frequency: 118.280
+
+    - callsign: TILSTOCK RADIO
+      controls:
+          - tilstock-noatz
+      frequency: 118.105
+
+    - callsign: TURWESTON RADIO
+      controls:
+          - turweston-noatz
+      frequency: 122.180
+
+    - callsign: VALLEY RADAR
+      controls:
+          - mona-atz
+          - mona-valley-matz
+          - valley-atz
+          - valley-matz
+      frequency: 125.225
+
+    - callsign: WADDINGTON ZONE
+      controls:
+          - waddington-atz
+          - waddington-matz
+      frequency: 119.500
+
+    - callsign: WALNEY INFORMATION
+      controls:
+          - walney-atz
+      frequency: 123.205
+
+    - callsign: WALTHAM RADIO
+      controls:
+          - white-waltham-atz
+      frequency: 122.605
+
+    - callsign: WARTON RADAR
+      controls:
+          - warton-atz
+          - warton-matz
+      frequency: 129.530
+
+    - callsign: WATTISHAM APPROACH
+      controls:
+          - wattisham-atz
+          - wattisham-matz
+      frequency: 125.800
+
+    - callsign: WELLESBOURNE INFORMATION
+      controls:
+          - wellesbourne-atz
+      frequency: 124.030
+
+    - callsign: WELSHPOOL RADIO
+      controls:
+          - welshpool-atz
+      frequency: 128.005
+
+    - callsign: WEST WALES INFORMATION
+      controls:
+          - west-wales-atz
+      frequency: 122.155
+
+    - callsign: WICK APPROACH
+      controls:
+          - wick-atz
+      frequency: 119.705
+
+    - callsign: WICKENBY RADIO
+      controls:
+          - wickenby-atz
+      frequency: 122.455
+
+    - callsign: WITTERING ZONE
+      controls:
+          - wittering-atz
+          - wittering-matz
+      frequency: 119.675
+
+    - callsign: WOODVALE APPROACH
+      controls:
+          - woodvale-atz
+      frequency: 121.000
+
+    - callsign: WYCOMBE TOWER
+      controls:
+          - wycombe-atz
+      frequency: 126.555
+
+    - callsign: YEOVIL APPROACH
+      controls:
+          - yeovil-atz
+      frequency: 130.805
+
+    - callsign: YEOVILTON RADAR
+      controls:
+          - yeovilton-atz
+          - yeovilton-matz
+      frequency: 127.350
+
+    #-----------------------------------------------------------------------
+    # Civil gliding
+
+    - callsign: ABOYNE RADIO
+      controls:
+          - aboyne-glider
+      frequency: 130.105
+
+    - callsign: ASTON DOWN RADIO
+      controls:
+          - aston-down-glider
+      frequency: 129.980
+
+    - callsign: WALNEY RADIO
+      controls:
+          - walney-glider
+      frequency: 129.980
+
+    - callsign: BEMBRIDGE RADIO
+      controls:
+          - bembridge-glider
+      frequency: 123.255
+
+    - callsign: BICESTER RADIO
+      controls:
+          - bicester-glider
+      frequency: 135.480
+
+    - callsign: BIDFORD RADIO
+      controls:
+          - bidford-glider
+      frequency: 118.685
+
+    - callsign: BOGNOR REGIS RADIO
+      controls:
+          - bognor-regis-glider
+      frequency: 129.980
+
+    - callsign: BOOKER RADIO
+      controls:
+          - booker-glider
+      frequency: 126.555
+
+    - callsign: BRENT TOR RADIO
+      controls:
+          - brent-tor-glider
+      frequency: 130.105
+
+    - callsign: BURN RADIO
+      controls:
+          - burn-glider
+      frequency: 129.980
+
+    - callsign: CAMPHILL RADIO
+      controls:
+          - camphill-glider
+      frequency: 129.980
+
+    - callsign: CHALLOCK RADIO
+      controls:
+          - challock-glider
+      frequency: 118.685
+
+    - callsign: CHIPPING RADIO
+      controls:
+          - chipping-glider
+      frequency: 118.685
+
+    - callsign: CRANWELL RADIO
+      controls:
+          - cranwell-glider
+      frequency: 129.980
+
+    - callsign: CROWLAND RADIO
+      controls:
+          - crowland-glider
+      frequency: 129.980
+
+    - callsign: CULDROSE RADIO
+      controls:
+          - culdrose-glider
+      frequency: 134.050
+
+    - callsign: CURROCK HILL RADIO
+      controls:
+          - currock-hill-glider
+      frequency: 130.130
+
+    - callsign: DARLTON RADIO
+      controls:
+          - darlton-glider
+      frequency: 118.685
+
+    - callsign: DUNSTABLE RADIO
+      controls:
+          - dunstable-glider
+      frequency: 119.905
+
+    - callsign: EAGLESCOTT RADIO
+      controls:
+          - eaglescott-glider
+      frequency: 123.000
+
+    - callsign: EASTERTON RADIO
+      controls:
+          - easterton-glider
+      frequency: 130.105
+
+    - callsign: EDGE HILL RADIO
+      controls:
+          - edge-hill-glider
+      frequency: 129.980
+
+    - callsign: EYRES FIELD RADIO
+      controls:
+          - eyres-field-glider
+      frequency: 129.980
+
+    - callsign: FALGUNZEON RADIO
+      controls:
+          - falgunzeon-glider
+      frequency: 129.980
+
+    - callsign: FESHIEBRIDGE RADIO
+      controls:
+          - feshiebridge-glider
+      frequency: 118.685
+
+    - callsign: GRANSDEN LODGE RADIO
+      controls:
+          - gransden-lodge-glider
+      frequency: 131.280
+
+    - callsign: HALESLAND RADIO
+      controls:
+          - halesland-glider
+      frequency: 129.980
+
+    - callsign: HINTON RADIO
+      controls:
+          - hinton-in-the-hedges-glider
+      frequency: 119.455
+
+    - callsign: HUSBANDS BOSWORTH RADIO
+      controls:
+          - husbands-bosworth-glider
+      frequency: 127.580
+
+    - callsign: KEEVIL RADIO
+      controls:
+          - keevil-glider
+      frequency: 129.980
+
+    - callsign: KIRTON RADIO
+      controls:
+          - kirton-in-lindsey-glider
+      frequency: 129.980
+
+    - callsign: LASHAM RADIO
+      controls:
+          - lasham-glider
+      frequency: 131.030
+
+    - callsign: LLANTISILIO RADIO
+      controls:
+          - llantisilio-glider
+      frequency: 129.980
+
+    - callsign: LLEWENI PARC RADIO
+      controls:
+          - lleweni-parc-glider
+      frequency: 129.980
+
+    - callsign: LONG MYND RADIO
+      controls:
+          - long-mynd-glider
+      frequency: 129.980
+
+    - callsign: LYVEDEN RADIO
+      controls:
+          - lyveden-glider
+      frequency: 129.980
+
+    - callsign: MARHAM RADIO
+      controls:
+          - marham-glider
+      frequency: 124.150
+
+    - callsign: MILFIELD RADIO
+      controls:
+          - milfield-glider
+      frequency: 130.105
+
+    - callsign: NORTH HILL RADIO
+      controls:
+          - north-hill-glider
+      frequency: 129.905
+
+    - callsign: NYMPSFIELD RADIO
+      controls:
+          - nympsfield-glider
+      frequency: 129.980
+
+    - callsign: OBAN RADIO
+      controls:
+          - oban-glider
+      frequency: 118.055
+
+    - callsign: PARHAM RADIO
+      controls:
+          - parham-glider
+      frequency: 118.685
+
+    - callsign: POCKLINGTON RADIO
+      controls:
+          - pocklington-glider
+      frequency: 118.685
+
+    - callsign: PORTMOAK RADIO
+      controls:
+          - portmoak-glider
+      frequency: 129.980
+
+    - callsign: RATTLESDEN RADIO
+      controls:
+          - rattlesden-glider
+      frequency: 129.980
+
+    - callsign: RIDGEWELL RADIO
+      controls:
+          - ridgewell-glider
+      frequency: 129.980
+
+    - callsign: RINGMER RADIO
+      controls:
+          - ringmer-glider
+      frequency: 129.980
+
+    - callsign: RIVAR HILL RADIO
+      controls:
+          - rivar-hill-glider
+      frequency: 129.980
+
+    - callsign: RUFFORTH RADIO
+      controls:
+          - rufforth-glider
+      frequency: 129.980
+
+    - callsign: SACKVILLE LODGE RADIO
+      controls:
+          - sackville-lodge-glider
+      frequency: 135.480
+
+    - callsign: SALTBY RADIO
+      controls:
+          - saltby-glider
+      frequency: 129.980
+
+    - callsign: SANDHILL FARM RADIO
+      controls:
+          - sandhill-farm-glider
+      frequency: 129.980
+
+    - callsign: SEIGHFORD RADIO
+      controls:
+          - seighford-glider
+      frequency: 129.980
+
+    - callsign: SHOBDON RADIO
+      controls:
+          - shobdon-glider
+      frequency: 118.155
+
+    - callsign: SKELLING FARM RADIO
+      controls:
+          - skelling-farm-glider
+      frequency: 129.980
+
+    - callsign: SLEAP RADIO
+      controls:
+          - sleap-glider
+      frequency: 122.455
+
+    - callsign: SNITTERFIELD RADIO
+      controls:
+          - snitterfield-glider
+      frequency: 129.980
+
+    - callsign: STRUBBY RADIO
+      controls:
+          - strubby-glider
+      frequency: 129.980
+
+    - callsign: SUTTON BANK RADIO
+      controls:
+          - sutton-bank-glider
+      frequency: 118.685
+
+    - callsign: TALGARTH RADIO
+      controls:
+          - talgarth-glider
+      frequency: 118.685
+
+    - callsign: THE PARK RADIO
+      controls:
+          - the-park-glider
+      frequency: 118.685
+
+    - callsign: TIBENHAM RADIO
+      controls:
+          - tibenham-glider
+      frequency: 129.980
+
+    - callsign: UPWOOD RADIO
+      controls:
+          - upwood-glider
+      frequency: 129.980
+
+    - callsign: USK RADIO
+      controls:
+          - usk-glider
+      frequency: 129.980
+
+    - callsign: WATTISHAM RADIO
+      controls:
+          - wattisham-glider
+      frequency: 125.800
+
+    - callsign: WESTON RADIO
+      controls:
+          - weston-on-the-green-glider
+      frequency: 129.980
+
+    - callsign: WORMINGFORD RADIO
+      controls:
+          - wormingford-glider
+      frequency: 129.980
+
+    - callsign: YEOVILTON RADIO
+      controls:
+          - yeovilton-glider
+      frequency: 127.350
+
+    #-----------------------------------------------------------------------
+    # Military gliding
+
+    - callsign: COSFORD RADIO
+      controls:
+          - cosford-glider
+      frequency: 135.875
+
+    - callsign: HALTON RADIO
+      controls:
+          - halton-glider
+      frequency: 130.425
+
+    - callsign: KENLEY RADIO
+      controls:
+          - kenley-glider
+      frequency: 119.760
+
+    - callsign: LITTLE RISSINGTON RADIO
+      controls:
+          - little-rissington-glider
+          - little-rissington-atz
+      frequency: 120.775
+
+    - callsign: ODIHAM RADIO
+      controls:
+          - odiham-glider
+      frequency: 131.300
+
+    - callsign: UPAVON RADIO
+      controls:
+          - upavon-glider
+      frequency: 124.100
