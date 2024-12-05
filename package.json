@@ -1,6 +1,6 @@
 {
     "name": "@openaip/yaixm-to-geojson",
-    "version": "0.6.4",
+    "version": "0.6.5",
     "description": "Converts YAIXM to GeoJSON. YAIXM is a simplified version of the FAA/EUROCONTOL Aeronautical Information Exchange Model (AIXM) using YAML.",
     "keywords": [
         "openaip",
