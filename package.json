@@ -61,7 +61,7 @@
         "eslint-plugin-import": "^2.31.0",
         "eslint-plugin-only-warn": "^1.1.0",
         "eslint-plugin-prettier": "^4.2.1",
-        "nodemon": "^2.0.22",
+        "nodemon": "^3.1.7",
         "npm-check-updates": "^16.14.20",
         "prettier": "^2.8.8",
         "version-bump-prompt": "^6.1.0",
