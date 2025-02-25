@@ -5,6 +5,8 @@ airspace:
       class: D
       geometry:
           - seq: 1
+            # explicitly no ID set - should use the main ID
+            id: farnborough-cta-1
             upper: 2500 ft
             lower: 2000 ft
             boundary:
@@ -14,6 +16,7 @@ airspace:
                       - 511520N 0003639W
                       - 512013N 0003800W
           - seq: 2
+            id: farnborough-cta-2
             upper: 5500 ft
             lower: 1500 ft
             boundary:
@@ -27,6 +30,7 @@ airspace:
                       centre: 511256N 0005136W
                       to: 511705N 0005508W
           - seq: 3
+            id: farnborough-cta-3
             upper: 5500 ft
             lower: 2000 ft
             boundary:
@@ -39,6 +43,7 @@ airspace:
                       centre: 511256N 0005136W
                       to: 511535N 0005748W
           - seq: 4
+            id: farnborough-cta-4
             upper: 3500 ft
             lower: 2500 ft
             boundary:
@@ -51,6 +56,7 @@ airspace:
                       - 510652N 0004829W
                       - 511035N 0005054W
           - seq: 5
+            id: farnborough-cta-5
             upper: 4500 ft
             lower: 2500 ft
             boundary:
@@ -59,6 +65,7 @@ airspace:
                       - 510449N 0004709W
                       - 510602N 0005439W
           - seq: 6
+            id: farnborough-cta-6
             upper: 5500 ft
             lower: 2500 ft
             boundary:
@@ -68,6 +75,7 @@ airspace:
                       - 510652N 0004829W
                       - 510602N 0005439W
           - seq: 7
+            id: farnborough-cta-7
             upper: 4500 ft
             lower: 3500 ft
             boundary:
@@ -77,6 +85,7 @@ airspace:
                       - 510047N 0004433W
                       - 510047N 0005251W
           - seq: 8
+            id: farnborough-cta-8
             class: E
             rules:
                 - TMZ
@@ -91,6 +100,7 @@ airspace:
                       - 510420N 0010657W
                       - 510636N 0010817W
           - seq: 9
+            id: farnborough-cta-9
             class: E
             rules:
                 - TMZ

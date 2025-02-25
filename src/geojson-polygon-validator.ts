@@ -10,6 +10,7 @@ import {
     unkinkPolygon,
 } from '@turf/turf';
 import type { Feature, Point } from 'geojson';
+// @ts-expect-error - JSTS is not typed
 import jsts from 'jsts';
 import { z } from 'zod';
 import { validateSchema } from './validate-schema.js';

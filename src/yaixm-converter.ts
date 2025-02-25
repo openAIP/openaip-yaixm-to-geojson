@@ -93,22 +93,21 @@ export class YaixmConverter {
         // reset internal state
         this.reset();
 
-        const normalizedFilepath = path.normalize(inputFilepath);
-        const existsAirspaceFile = fs.existsSync(normalizedFilepath);
+        const existsAirspaceFile = fs.existsSync(inputFilepath);
         if (existsAirspaceFile === false) {
             throw new Error(`File '${inputFilepath}' does not exist`);
         }
         if (serviceFilePath != null) {
-            const existsServiceFile = fs.existsSync(normalizedFilepath);
+            const existsServiceFile = fs.existsSync(inputFilepath);
             if (existsServiceFile === false) {
                 throw new Error(`File '${serviceFilePath}' does not exist`);
             }
         }
         // read file content from inputFilePath to Buffer and hand over to convertFromBuffer function
-        const buffer = fs.readFileSync(normalizedFilepath);
+        const buffer = fs.readFileSync(inputFilepath);
         const convertFromBufferConfig: ConvertFromBufferConfig = { type };
         if (serviceFilePath != null) {
-            convertFromBufferConfig.serviceFileBuffer = fs.readFileSync(normalizedFilepath);
+            convertFromBufferConfig.serviceFileBuffer = fs.readFileSync(inputFilepath);
         }
 
         return this.convertFromBuffer(buffer, convertFromBufferConfig);

@@ -1,3 +1,4 @@
+// @ts-expect-error - not typed
 import rewind from '@mapbox/geojson-rewind';
 import { Parser as CoordinateParser } from '@openaip/coordinate-parser';
 import {
@@ -102,6 +103,8 @@ type YaixmAirspace = {
     id: string;
     type: string;
     localtype: string;
+    // "rules" -> can have combination [TMZ, TRA, NOTAM, RMZ, ...]
+    rules: string[];
     class: string;
     geometry: {
         seq: number;
@@ -109,11 +112,12 @@ type YaixmAirspace = {
         id: string;
         upper: string;
         lower: string;
+        // sequences can overwrite case "class"
         class: string;
+        // sequences can overwrite base "rules" -> can have combination [TMZ, TRA, NOTAM, RMZ, ...]
         rules: string[];
         boundary: YaixmAirspaceBoundary;
     }[];
-    rules: string[];
 };
 
 export class AirspaceConverter {
@@ -212,13 +216,24 @@ export class AirspaceConverter {
         return geojson;
     }
 
+    private buildAirspaceName(name: string, id: string): string {
+        if (id == null) {
+            return name;
+        }
+
+        // replace "-" with " " and all to upper case
+        const idParts = id.split('-').map((part) => part.toUpperCase());
+
+        return `${idParts.join(' ')}`;
+    }
+
     private async createAirspaceFeatures(
         airspaceJson: YaixmAirspace,
         options: { services?: YaixmServices }
     ): Promise<GeoJsonAirspaceFeature[]> {
         const { services } = options;
         const features: GeoJsonAirspaceFeature[] = [];
-        const { name, id, type, localtype: localType, class: baseAirspaceClass, geometry, rules: baseRules } = airspaceJson;
+        const { name, id, type, localtype: localType, class: baseClass, geometry, rules: baseRules } = airspaceJson;
         // set identifier for error messages
         this._identifier = name as string;
 
@@ -229,20 +244,23 @@ export class AirspaceConverter {
                 upper,
                 lower,
                 boundary,
-                id,
-                class: sequenceAirspaceClass,
+                id: sequenceId,
+                class: sequenceClass,
                 rules: sequenceRules,
             } = geometryDefinition;
             // set sequence number for error messages, use "0" if no sequence number is defined
             this._sequenceNumber = seq || 0;
 
-            const airspaceClass = sequenceAirspaceClass || baseAirspaceClass;
+            const airspaceId = sequenceId || id;
+            const airspaceName = this.buildAirspaceName(name, airspaceId);
+            const airspaceClass = sequenceClass || baseClass;
+            const airspaceRules = sequenceRules || baseRules;
             // map to only type/class combination
             const {
                 type: mappedType,
                 class: mappedClass,
                 metaProps,
-            } = this.mapClassAndType(type, localType, airspaceClass);
+            } = this.mapClassAndType(type, localType, airspaceClass, airspaceRules);
             const upperCeiling = this.createCeiling(upper);
             const lowerCeiling = this.createCeiling(lower);
             let geometry = this.createPolygonGeometry(boundary);
@@ -253,17 +271,18 @@ export class AirspaceConverter {
             if (this._validateGeometries) {
                 this._geojsonValidator.validate(geometry);
             }
+
             const featureProperties: Partial<GeoJsonAirspaceFeatureProperties> = {
                 ...{
-                    name,
+                    name: airspaceName,
                     type: mappedType,
                     class: mappedClass,
                     upperCeiling,
                     lowerCeiling,
-                    activatedByNotam: rules?.includes('NOTAM') === true,
+                    activatedByNotam: airspaceRules?.includes('NOTAM') === true,
                     // set default value, will be overwritten by "metaProps" if applicable
                     activity: 'NONE',
-                    remarks: rules == undefined ? undefined : rules.join(', '),
+                    remarks: airspaceRules == undefined ? undefined : airspaceRules.join(', '),
                 },
                 // merges updated field value for fields, e.g. "activity"
                 ...metaProps,
@@ -322,7 +341,8 @@ export class AirspaceConverter {
     private mapClassAndType(
         type: string,
         localType: string,
-        airspaceClass: string
+        airspaceClass: string,
+        airspaceRules: string[]
     ): { type: string; class: string; metaProps?: { activity: string } } {
         const message = `Failed to map class/type combination for airspace '${this._identifier}'.`;
         // check type is allowed
@@ -338,6 +358,14 @@ export class AirspaceConverter {
             throw new Error(`${message} The 'class' value '${airspaceClass}' is not in the list of allowed classes.`);
         }
 
+        // rules can contain a type value that overwrites the main defined airspace type
+        const ruleTypes = ['TMZ', 'TRA', 'RMZ'];
+        if (airspaceRules != null && airspaceRules.some((rule) => ruleTypes.includes(rule))) {
+            const ruleType = airspaceRules.find((rule) => ruleTypes.includes(rule));
+            if (ruleType != null) {
+                type = ruleType;
+            }
+        }
         if (type != null && airspaceClass != null) {
             let mappedType: string;
             let mappedClass: string;
@@ -363,6 +391,15 @@ export class AirspaceConverter {
                     break;
                 case 'R':
                     mappedType = 'RESTRICTED';
+                    break;
+                case 'TMZ':
+                    mappedType = 'TMZ';
+                    break;
+                case 'RMZ':
+                    mappedType = 'RMZ';
+                    break;
+                case 'TRA':
+                    mappedType = 'TRA';
                     break;
                 default:
                     throw new Error(`${message} The 'type' value '${type}' has no configured mapping.`);
