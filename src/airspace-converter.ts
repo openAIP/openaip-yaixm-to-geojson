@@ -21,8 +21,8 @@ import GEOJSON_SCHEMA from '../schemas/geojson-schema.json';
 import { cleanObject } from './clean-object.js';
 import DEFAULT_CONFIG from './default-config.js';
 import { GeojsonPolygonValidator } from './geojson-polygon-validator.js';
-import { validateSchema } from './validate-schema.js';
 import type { CoordLike, GeoJsonAirspaceFeature, GeoJsonAirspaceFeatureProperties } from './types.js';
+import { validateSchema } from './validate-schema.js';
 
 const ALLOWED_TYPES = ['CTA', 'TMA', 'CTR', 'ATZ', 'OTHER', 'D', 'P', 'R', 'D_OTHER'];
 const ALLOWED_LOCALTYPES = ['MATZ', 'GLIDER', 'GVS', 'HIRTA', 'LASER', 'DZ', 'NOATZ', 'UL', 'ILS', 'RMZ', 'TMZ'];
@@ -56,13 +56,6 @@ export type Config = {
     // If true, the created GEOJSON is validated against the underlying schema to enforce compatibility.
     // If false, simply warns on console about schema mismatch. Defaults to false.
     strictSchemaValidation?: boolean;
-};
-
-type Configuration = {
-    validateGeometries: boolean;
-    fixGeometries: boolean;
-    geometryDetail: number;
-    strictSchemaValidation: boolean;
 };
 
 export const ConvertOptionsSchema = z
@@ -112,15 +105,22 @@ type YaixmAirspace = {
     class: string;
     geometry: {
         seq: number;
+        // identifier - name of the airspace formatted as "name-part1-part2"
+        id: string;
         upper: string;
         lower: string;
+        class: string;
+        rules: string[];
         boundary: YaixmAirspaceBoundary;
     }[];
     rules: string[];
 };
 
 export class AirspaceConverter {
-    private _config: Configuration;
+    private _validateGeometries: boolean;
+    private _fixGeometries: boolean;
+    private _geometryDetail: number;
+    private _strictSchemaValidation: boolean;
     private _schemaValidator: AnyValidateFunction;
     // used in error messages to better identify the airspace that caused the error
     private _identifier: string | undefined;
@@ -132,7 +132,15 @@ export class AirspaceConverter {
     constructor(config: Config) {
         validateSchema(config, ConfigSchema, { assert: true, name: 'Name' });
 
-        this._config = { ...DEFAULT_CONFIG, ...config };
+        const { fixGeometries, geometryDetail, strictSchemaValidation, validateGeometries } = {
+            ...DEFAULT_CONFIG,
+            ...config,
+        };
+
+        this._fixGeometries = fixGeometries;
+        this._geometryDetail = geometryDetail;
+        this._strictSchemaValidation = strictSchemaValidation;
+        this._validateGeometries = validateGeometries;
 
         const ajvParser = new Ajv({
             // nullable: true,
@@ -192,7 +200,7 @@ export class AirspaceConverter {
         const geojson = createFeatureCollection(geojsonFeatures);
         const valid = this._schemaValidator(geojson);
         if (valid === false) {
-            if (this._config.strictSchemaValidation) {
+            if (this._strictSchemaValidation) {
                 throw new Error(
                     `GeoJSON does not adhere to underlying schema. ${JSON.stringify(this._schemaValidator.errors)}`
                 );
@@ -210,30 +218,39 @@ export class AirspaceConverter {
     ): Promise<GeoJsonAirspaceFeature[]> {
         const { services } = options;
         const features: GeoJsonAirspaceFeature[] = [];
-        const { name, id, type, localtype: localType, class: airspaceClass, geometry, rules } = airspaceJson;
+        const { name, id, type, localtype: localType, class: baseAirspaceClass, geometry, rules: baseRules } = airspaceJson;
         // set identifier for error messages
         this._identifier = name as string;
-        // map to only type/class combination
-        const {
-            type: mappedType,
-            class: mappedClass,
-            metaProps,
-        } = this.mapClassAndType(type, localType, airspaceClass);
 
         // for each airspace geometry defined in YAIXM block, create a GeoJSON feature
         for (const geometryDefinition of geometry) {
-            const { seq, upper, lower, boundary } = geometryDefinition;
+            const {
+                seq,
+                upper,
+                lower,
+                boundary,
+                id,
+                class: sequenceAirspaceClass,
+                rules: sequenceRules,
+            } = geometryDefinition;
             // set sequence number for error messages, use "0" if no sequence number is defined
             this._sequenceNumber = seq || 0;
 
+            const airspaceClass = sequenceAirspaceClass || baseAirspaceClass;
+            // map to only type/class combination
+            const {
+                type: mappedType,
+                class: mappedClass,
+                metaProps,
+            } = this.mapClassAndType(type, localType, airspaceClass);
             const upperCeiling = this.createCeiling(upper);
             const lowerCeiling = this.createCeiling(lower);
             let geometry = this.createPolygonGeometry(boundary);
 
-            if (this._config.fixGeometries) {
+            if (this._fixGeometries) {
                 geometry = this.fixGeometry(geometry);
             }
-            if (this._config.validateGeometries) {
+            if (this._validateGeometries) {
                 this._geojsonValidator.validate(geometry);
             }
             const featureProperties: Partial<GeoJsonAirspaceFeatureProperties> = {
@@ -656,7 +673,7 @@ export class AirspaceConverter {
         const endBearing = calcBearing(centerPoint, endPoint);
         // create arc linestring feature
         const arc = createArc(centerPoint, radiusKm, startBearing, endBearing, {
-            steps: this._config.geometryDetail,
+            steps: this._geometryDetail,
             units: 'kilometers',
         });
 
@@ -704,7 +721,7 @@ export class AirspaceConverter {
         const centerPoint = createPoint([centerLon, centerLat]);
 
         const { geometry } = createCircle(centerPoint, radiusKm, {
-            steps: this._config.geometryDetail,
+            steps: this._geometryDetail,
             units: 'kilometers',
         });
         const [coordinates] = geometry.coordinates;

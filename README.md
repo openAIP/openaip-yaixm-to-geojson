@@ -361,10 +361,12 @@ npm install -g @openaip/yaixm-to-geojson
 # Node
 
 ```javascript
+// with CommonJS (CJS) syntax
 const { YaixmConverter } = require('@openaip/yaixm-to-geojson');
+// ECMAScript Modules (ESM) syntax
+import { YaixmConverter} from '@openaip/yaixm-to-geojson';
 
 const inputFilePath = './path/to/input-yaixm-file.txt';
-
 const converter = new YaixmConverter({ fixGeometries: true, strictSchemaValidation: true });
 // or alternatively call "convertFromBuffer" to read from Buffer
 await converter.convertFromFile(inputFilepath, { type: 'airspace' });

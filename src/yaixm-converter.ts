@@ -1,11 +1,11 @@
 import * as fs from 'node:fs';
+import path from 'node:path';
 import type { FeatureCollection, Polygon } from 'geojson';
 import { z } from 'zod';
 import { AirspaceConverter } from './airspace-converter.js';
 import DEFAULT_CONFIG from './default-config.js';
 import type { GeoJsonAirspaceFeatureProperties } from './types.js';
 import { validateSchema } from './validate-schema.js';
-import path from 'node:path';
 
 export const ConfigSchema = z
     .object({
@@ -27,13 +27,6 @@ export type Config = {
     geometryDetail?: number;
     // If true, the created GEOJSON is validated against the underlying schema to enforce compatibility.
     strictSchemaValidation?: boolean;
-};
-
-type Configuration = {
-    validateGeometries: boolean;
-    fixGeometries: boolean;
-    geometryDetail: number;
-    strictSchemaValidation: boolean;
 };
 
 export const ConvertFromFileConfigSchema = z
@@ -72,13 +65,24 @@ export type ConvertFromBufferConfig = {
  * Converts a YAIXM file to GeoJSON file.
  */
 export class YaixmConverter {
-    private _config: Configuration;
+    private _validateGeometries: boolean;
+    private _fixGeometries: boolean;
+    private _geometryDetail: number;
+    private _strictSchemaValidation: boolean;
     private _geojson: FeatureCollection<Polygon, GeoJsonAirspaceFeatureProperties> | undefined;
 
     constructor(config: Config) {
         validateSchema(config, ConfigSchema, { assert: true, name: 'Config' });
 
-        this._config = { ...DEFAULT_CONFIG, ...config };
+        const { fixGeometries, geometryDetail, strictSchemaValidation, validateGeometries } = {
+            ...DEFAULT_CONFIG,
+            ...config,
+        };
+
+        this._fixGeometries = fixGeometries;
+        this._geometryDetail = geometryDetail;
+        this._strictSchemaValidation = strictSchemaValidation;
+        this._validateGeometries = validateGeometries;
     }
 
     async convertFromFile(inputFilepath: string, config: ConvertFromFileConfig): Promise<void> {
@@ -153,7 +157,12 @@ export class YaixmConverter {
     private getConverter(type: string): AirspaceConverter {
         switch (type) {
             case 'airspace':
-                return new AirspaceConverter(this._config);
+                return new AirspaceConverter({
+                    validateGeometries: this._validateGeometries,
+                    fixGeometries: this._fixGeometries,
+                    geometryDetail: this._geometryDetail,
+                    strictSchemaValidation: this._strictSchemaValidation,
+                });
             default:
                 throw new Error(`Unknown type '${type}'`);
         }
