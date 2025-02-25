@@ -73,7 +73,7 @@ export type ConvertOptions = {
 };
 
 type YaixmService = { callsign: string; controls: string; frequency: string };
-type YaixmServices = { id: string; service: YaixmService[] };
+type YaixmServices = { airspace: YaixmService[] };
 
 type YaixmAirspaceBoundaryLine = {
     line: string[];
@@ -319,7 +319,7 @@ export class AirspaceConverter {
     ): Promise<Omit<YaixmService, 'controls'> | null> {
         try {
             // read services file
-            for (const service of services.service) {
+            for (const service of services.airspace) {
                 const { callsign, controls, frequency } = service;
                 // airspace "id" is mapped to "controls"" in services file
                 if (controls?.includes(id)) {
@@ -416,6 +416,7 @@ export class AirspaceConverter {
             switch (comb) {
                 case 'OTHER|MATZ':
                     return { type: 'MATZ', class: 'G' };
+                case 'TRA|GLIDER':
                 case 'D_OTHER|GLIDER':
                     return { type: 'GLIDING_SECTOR', class: 'UNCLASSIFIED' };
                 // gas venting station
@@ -449,11 +450,13 @@ export class AirspaceConverter {
                         class: 'UNCLASSIFIED',
                         metaProps: { activity: 'ULM' },
                     };
+                case 'RMZ|RMZ':
                 case 'OTHER|RMZ':
                     return {
                         type: 'RMZ',
                         class: 'UNCLASSIFIED',
                     };
+                case 'TMZ|TMZ':
                 case 'OTHER|TMZ':
                     return {
                         type: 'TMZ',
