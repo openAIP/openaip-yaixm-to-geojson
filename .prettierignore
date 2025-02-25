@@ -1,6 +1,14 @@
-.build/
-.coverage/
-_workspace/
 node_modules/
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
 secrets/
-docs/
+_coverage/
+
+# Ignore files for PNPM, NPM and YARN
+package-lock.json
+yarn.lock
+*yaml
+*yml

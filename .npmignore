@@ -1,10 +1,7 @@
 **/*
 
-!src/**
-!schemas/**
-!license.txt
-!cli.js
-!index.js
+!dist/**
 !package.json
 !package-lock.json
+!license.txt
 !README.md

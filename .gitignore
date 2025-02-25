@@ -1,12 +1,11 @@
-.DS_Store
 .idea/
 .vscode/
 coverage/
 node_modules/
 .env*
-secrets/
 .npmrc
 nohup.out
-var/*
+dist/
+.eslintcache
+.DS_Store
 .history/
-!var/.gitkeep
