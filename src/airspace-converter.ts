@@ -18,7 +18,7 @@ import type { AnyValidateFunction } from 'ajv/dist/core.js';
 import type { FeatureCollection } from 'geojson';
 import YAML from 'yaml';
 import { z } from 'zod';
-import GEOJSON_SCHEMA from '../schemas/geojson-schema.json';
+import GEOJSON_SCHEMA from './schemas/geojson-schema.json';
 import { cleanObject } from './clean-object.js';
 import DEFAULT_CONFIG from './default-config.js';
 import { GeojsonPolygonValidator } from './geojson-polygon-validator.js';
