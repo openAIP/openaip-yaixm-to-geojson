@@ -1,6 +1,7 @@
 **/*
 
 !dist/**
+!schemas/**
 !package.json
 !package-lock.json
 !license.txt
