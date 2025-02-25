@@ -3,7 +3,9 @@ import type { FeatureCollection, Polygon } from 'geojson';
 import { z } from 'zod';
 import { AirspaceConverter } from './airspace-converter.js';
 import DEFAULT_CONFIG from './default-config.js';
+import type { GeoJsonAirspaceFeatureProperties } from './types.js';
 import { validateSchema } from './validate-schema.js';
+import path from 'node:path';
 
 export const ConfigSchema = z
     .object({
@@ -71,7 +73,7 @@ export type ConvertFromBufferConfig = {
  */
 export class YaixmConverter {
     private _config: Configuration;
-    private _geojson: FeatureCollection<Polygon, any> | undefined; // IMPROVE add actual return properties
+    private _geojson: FeatureCollection<Polygon, GeoJsonAirspaceFeatureProperties> | undefined;
 
     constructor(config: Config) {
         validateSchema(config, ConfigSchema, { assert: true, name: 'Config' });
@@ -87,27 +89,28 @@ export class YaixmConverter {
         // reset internal state
         this.reset();
 
-        const existsAirspaceFile = fs.existsSync(inputFilepath);
+        const normalizedFilepath = path.normalize(inputFilepath);
+        const existsAirspaceFile = fs.existsSync(normalizedFilepath);
         if (existsAirspaceFile === false) {
             throw new Error(`File '${inputFilepath}' does not exist`);
         }
         if (serviceFilePath != null) {
-            const existsServiceFile = fs.existsSync(serviceFilePath);
+            const existsServiceFile = fs.existsSync(normalizedFilepath);
             if (existsServiceFile === false) {
                 throw new Error(`File '${serviceFilePath}' does not exist`);
             }
         }
         // read file content from inputFilePath to Buffer and hand over to convertFromBuffer function
-        const buffer = fs.readFileSync(inputFilepath);
+        const buffer = fs.readFileSync(normalizedFilepath);
         const convertFromBufferConfig: ConvertFromBufferConfig = { type };
         if (serviceFilePath != null) {
-            convertFromBufferConfig.serviceFileBuffer = fs.readFileSync(serviceFilePath);
+            convertFromBufferConfig.serviceFileBuffer = fs.readFileSync(normalizedFilepath);
         }
 
         return this.convertFromBuffer(buffer, convertFromBufferConfig);
     }
 
-    toGeojson(): GeoJSON.Polygon | undefined {
+    toGeojson(): GeoJSON.FeatureCollection<Polygon, GeoJsonAirspaceFeatureProperties> | undefined {
         return this._geojson;
     }
 
@@ -126,11 +129,8 @@ export class YaixmConverter {
             // write geojson to file at outputFilepath
             const buffer = Buffer.from(JSON.stringify(this._geojson, null, 2), 'utf-8');
             fs.writeFileSync(outputFilepath, buffer);
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                throw new Error(`Error writing file '${outputFilepath}': ${err.message}`);
-            }
-            throw new Error(`Error writing file '${outputFilepath}': ${String(err)}`);
+        } catch (err) {
+            throw new Error(`Error writing file '${outputFilepath}': ${err.message}`);
         }
     }
 

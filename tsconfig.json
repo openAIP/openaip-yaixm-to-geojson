@@ -13,6 +13,8 @@
         "baseUrl": ".",
         "rootDir": "./src",
         "resolveJsonModule": true,
+        "noImplicitAny": false,
+        "useUnknownInCatchVariables": false,
     },
     "include": [
         "src"

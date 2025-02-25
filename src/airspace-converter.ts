@@ -7,24 +7,22 @@ import {
     featureCollection as createFeatureCollection,
     lineString as createLineString,
     point as createPoint,
-    distance,
-    envelope,
-    area as getArea,
     lineToPolygon,
-    unkinkPolygon,
 } from '@turf/turf';
+import ajvErrors from 'ajv-errors';
 import addFormats from 'ajv-formats';
 import ajvKeywords from 'ajv-keywords';
 import Ajv from 'ajv/dist/2020';
 import type { AnyValidateFunction } from 'ajv/dist/core.js';
-import type { FeatureCollection, GeoJsonObject, MultiPolygon, Polygon } from 'geojson';
-import jsts from 'jsts';
+import type { FeatureCollection } from 'geojson';
 import YAML from 'yaml';
 import { z } from 'zod';
 import GEOJSON_SCHEMA from '../schemas/geojson-schema.json';
 import { cleanObject } from './clean-object.js';
 import DEFAULT_CONFIG from './default-config.js';
+import { GeojsonPolygonValidator } from './geojson-polygon-validator.js';
 import { validateSchema } from './validate-schema.js';
+import type { CoordLike, GeoJsonAirspaceFeature, GeoJsonAirspaceFeatureProperties } from './types.js';
 
 const ALLOWED_TYPES = ['CTA', 'TMA', 'CTR', 'ATZ', 'OTHER', 'D', 'P', 'R', 'D_OTHER'];
 const ALLOWED_LOCALTYPES = ['MATZ', 'GLIDER', 'GVS', 'HIRTA', 'LASER', 'DZ', 'NOATZ', 'UL', 'ILS', 'RMZ', 'TMZ'];
@@ -81,6 +79,7 @@ export type ConvertOptions = {
 };
 
 type YaixmService = { callsign: string; controls: string; frequency: string };
+type YaixmServices = { id: string; service: YaixmService[] };
 
 type YaixmAirspaceBoundaryLine = {
     line: string[];
@@ -101,8 +100,9 @@ type YaixmAirspaceBoundaryCircle = {
         centre: string;
     };
 };
-
-type YaixmAirspaceBoundary = YaixmAirspaceBoundaryLine | YaixmAirspaceBoundaryArc | YaixmAirspaceBoundaryCircle;
+// boundary type is an array of line, arc or circle objects
+type YaixmAirspaceBoundaries = YaixmAirspaceBoundaryLine | YaixmAirspaceBoundaryArc | YaixmAirspaceBoundaryCircle;
+type YaixmAirspaceBoundary = YaixmAirspaceBoundaries[];
 
 type YaixmAirspace = {
     name: string;
@@ -127,6 +127,7 @@ export class AirspaceConverter {
     private _sequenceNumber: number | undefined;
     // keep track of all calculated coordinates for the currently processed airspace boundary
     private _boundaryCoordinates: number[][] = [];
+    private _geojsonValidator: GeojsonPolygonValidator;
 
     constructor(config: Config) {
         validateSchema(config, ConfigSchema, { assert: true, name: 'Name' });
@@ -145,19 +146,23 @@ export class AirspaceConverter {
         ajvKeywords(ajvParser, []);
         // add unknown keywords that would otherwise result in an exception
         ajvParser.addVocabulary(['example']);
-        require('ajv-errors')(ajvParser);
+        ajvErrors(ajvParser);
         // add schema
         ajvParser.validateSchema(GEOJSON_SCHEMA);
         ajvParser.addSchema(GEOJSON_SCHEMA);
         this._schemaValidator = ajvParser.getSchema(
             'https://adhoc-schemas.openaip.net/schemas/parsed-yaixm-airspace.json'
         ) as AnyValidateFunction;
+        this._geojsonValidator = new GeojsonPolygonValidator();
     }
 
     /**
      * Converts a buffer containing YAIXM airspace data to GeoJSON.
      */
-    async convert(buffer: Buffer, options: ConvertOptions): Promise<FeatureCollection<Polygon, any>> {
+    async convert(
+        buffer: Buffer,
+        options: ConvertOptions
+    ): Promise<FeatureCollection<GeoJSON.Polygon, GeoJsonAirspaceFeatureProperties>> {
         // IMPROVE set actual properties for returned type
         validateSchema(buffer, z.instanceof(Buffer), { assert: true, name: 'Buffer' });
         validateSchema(options, ConvertOptionsSchema, { assert: true, name: 'ConvertOptions' });
@@ -174,9 +179,14 @@ export class AirspaceConverter {
             // if services are given, use them as options and try to read them from file
             createOptions.services = await YAML.parse(serviceFileBuffer.toString());
         }
-        const geojsonFeatures = [];
+        const geojsonFeatures: GeoJsonAirspaceFeature[] = [];
         for (const airspace of yaixm.airspace) {
-            geojsonFeatures.push(...(await this.createAirspaceFeatures(airspace, createOptions)));
+            // each YAIXM airspace definition block may convert to multiple airspaces
+            const airspaceFeatures: GeoJsonAirspaceFeature[] = await this.createAirspaceFeatures(
+                airspace,
+                createOptions
+            );
+            geojsonFeatures.push(...airspaceFeatures);
         }
 
         const geojson = createFeatureCollection(geojsonFeatures);
@@ -194,23 +204,15 @@ export class AirspaceConverter {
         return geojson;
     }
 
-    /**
-     * @param {Object} airspaceJson
-     * @param {Object} options
-     * @param {Object[]} [options.services] - Services to map to airspaces.
-     * @return {Object}
-     * @private
-     */
     private async createAirspaceFeatures(
         airspaceJson: YaixmAirspace,
-        options: { services: YaixmService[] }
-    ): Promise<FeatureCollection<Polygon, any>> {
-        // IMPROVE set actual properties for returned type
+        options: { services?: YaixmServices }
+    ): Promise<GeoJsonAirspaceFeature[]> {
         const { services } = options;
-        const features = [];
+        const features: GeoJsonAirspaceFeature[] = [];
         const { name, id, type, localtype: localType, class: airspaceClass, geometry, rules } = airspaceJson;
         // set identifier for error messages
-        this._identifier = name;
+        this._identifier = name as string;
         // map to only type/class combination
         const {
             type: mappedType,
@@ -232,40 +234,37 @@ export class AirspaceConverter {
                 geometry = this.fixGeometry(geometry);
             }
             if (this._config.validateGeometries) {
-                const { isValid, selfIntersect } = this.validateGeometry(geometry);
-                if (isValid === false) {
-                    let message = `Invalid geometry for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'`;
-                    if (selfIntersect != null) {
-                        message += `: Self intersection at ${JSON.stringify(selfIntersect)}`;
-                    }
-                    throw new Error(message);
-                }
+                this._geojsonValidator.validate(geometry);
             }
-            const feature = {
-                type: 'Feature',
-                // set "base" airspace properties that is common to all airspaces defined in YAIXM  block. Each YAIXM block can define
-                // multiple airspaces, all with the same base properties.
-                properties: {
-                    ...{
-                        name,
-                        type: mappedType,
-                        class: mappedClass,
-                        upperCeiling,
-                        lowerCeiling,
-                        activatedByNotam: rules?.includes('NOTAM') === true,
-                        // set default value, will be overwritten by "metaProps" if applicable
-                        activity: 'NONE',
-                        remarks: rules == null ? null : rules.join(', '),
-                    },
-                    // merges updated field value for fields, e.g. "activity"
-                    ...metaProps,
+            const featureProperties: Partial<GeoJsonAirspaceFeatureProperties> = {
+                ...{
+                    name,
+                    type: mappedType,
+                    class: mappedClass,
+                    upperCeiling,
+                    lowerCeiling,
+                    activatedByNotam: rules?.includes('NOTAM') === true,
+                    // set default value, will be overwritten by "metaProps" if applicable
+                    activity: 'NONE',
+                    remarks: rules == undefined ? undefined : rules.join(', '),
                 },
-                geometry,
+                // merges updated field value for fields, e.g. "activity"
+                ...metaProps,
             };
             // add frequency property if services are available and mapping property "id" is set
             if (id != null && services != null) {
-                feature.properties.groundService = await this.createGroundServiceProperty(id, services);
+                const groundService = await this.createGroundServiceProperty(id, services);
+                if (groundService != null) {
+                    featureProperties.groundService = groundService;
+                }
             }
+            const feature: GeoJsonAirspaceFeature = {
+                type: 'Feature',
+                // set "base" airspace properties that is common to all airspaces defined in YAIXM  block. Each YAIXM block can define
+                // multiple airspaces, all with the same base properties.
+                properties: featureProperties as GeoJsonAirspaceFeatureProperties,
+                geometry,
+            };
 
             features.push(cleanObject(feature));
             // IMPORTANT reset internal state for next airspace
@@ -280,7 +279,7 @@ export class AirspaceConverter {
      */
     private async createGroundServiceProperty(
         id: string,
-        services: { id: string; service: YaixmService[] }
+        services: YaixmServices
     ): Promise<Omit<YaixmService, 'controls'> | null> {
         try {
             // read services file
@@ -297,9 +296,7 @@ export class AirspaceConverter {
 
             return null;
         } catch (err) {
-            // only warn if error
-            const errorMessage = (err as Error)?.message || 'Unknown error';
-            console.log(`WARN: Failed to map ground station services. ${errorMessage}`);
+            console.log(`WARN: Failed to map ground station services. ${err.message}`);
 
             return null;
         }
@@ -310,7 +307,7 @@ export class AirspaceConverter {
         localType: string,
         airspaceClass: string
     ): { type: string; class: string; metaProps?: { activity: string } } {
-        let message = `Failed to map class/type combination for airspace '${this._identifier}'.`;
+        const message = `Failed to map class/type combination for airspace '${this._identifier}'.`;
         // check type is allowed
         if (ALLOWED_TYPES.includes(type) === false) {
             throw new Error(`${message} The 'type' value '${type}' is not in the list of allowed types.`);
@@ -325,8 +322,8 @@ export class AirspaceConverter {
         }
 
         if (type != null && airspaceClass != null) {
-            let mappedType = null;
-            let mappedClass = null;
+            let mappedType: string;
+            let mappedClass: string;
 
             switch (type) {
                 case 'CTA':
@@ -470,8 +467,8 @@ export class AirspaceConverter {
             // check for "default" altitude definition, e.g. 16500ft MSL or similar
             const altitudeParts = REGEX_CEILING_FEET.exec(ceilingDefinition);
             // get altitude parts
-            let value = parseFloat((altitudeParts as string[])[1]);
-            let unit = (altitudeParts as string[])[3].toUpperCase();
+            const value = parseFloat((altitudeParts as string[])[1]);
+            const unit = (altitudeParts as string[])[3].toUpperCase();
             let referenceDatum = (altitudeParts as string[])[4] || 'MSL';
             // always use instead of SFC
             referenceDatum = referenceDatum === 'SFC' ? 'GND' : referenceDatum.toUpperCase();
@@ -481,7 +478,7 @@ export class AirspaceConverter {
             // check flight level altitude definition
             const altitudeParts = REGEX_CEILING_FLIGHT_LEVEL.exec(ceilingDefinition);
             // get altitude parts
-            let value = parseInt((altitudeParts as string[])[1]);
+            const value = parseInt((altitudeParts as string[])[1]);
 
             return { value, unit: 'FL', referenceDatum: 'STD' };
         }
@@ -494,7 +491,7 @@ export class AirspaceConverter {
     /**
      * Creates a GeoJSON Polygon geometry from a YAIXM airspace boundary (geometry) definition.
      */
-    private createPolygonGeometry(boundary: YaixmAirspaceBoundary[]): Polygon | MultiPolygon {
+    private createPolygonGeometry(boundary: YaixmAirspaceBoundary): GeoJSON.Polygon {
         // Each object on the boundary array resolves into a GeoJSON LineString geometry. Resolve each boundary object into a
         // list of coordinates pairs and then create a GeoJSON Polygon geometry from them.
         // Also make sure the resulting Polygon geometry is valid.
@@ -532,6 +529,12 @@ export class AirspaceConverter {
         let polygonFeature = lineToPolygon(lineString, { autoComplete: true, mutate: true, orderCoords: true });
         // make sure the polygon follows the right-hand rule
         polygonFeature = rewind(polygonFeature, false);
+        // if we have a multi-polygon, error out
+        if (polygonFeature.geometry.type === 'MultiPolygon') {
+            throw new Error(
+                `Invalid polygon geometry for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'. MultiPolygon geometries are not supported.`
+            );
+        }
 
         return polygonFeature.geometry;
     }
@@ -549,7 +552,7 @@ export class AirspaceConverter {
                 }' in sequence number '${this._sequenceNumber}'`
             );
         }
-        const coords = [];
+        const coords: CoordLike[] = [];
         for (const coordinate of coordinates) {
             // validate coordinate string
             if (REGEX_COORDINATES.test(coordinate) === false) {
@@ -559,7 +562,7 @@ export class AirspaceConverter {
                     )}' for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'`
                 );
             }
-            const coord = this.transformCoordinates(coordinate);
+            const coord: CoordLike = this.transformCoordinates(coordinate);
             coords.push(coord);
         }
 
@@ -575,7 +578,6 @@ export class AirspaceConverter {
      * @private
      */
     private createCoordinatesFromArc(boundaryDefinition: YaixmAirspaceBoundaryArc): number[][] {
-        // eslint-disable-next-line no-unsafe-optional-chaining
         const { dir, radius, centre, to } = boundaryDefinition.arc;
         // get last coordinates pair from boundary coordinates
         const lastCoord = this._boundaryCoordinates[this._boundaryCoordinates.length - 1];
@@ -713,10 +715,10 @@ export class AirspaceConverter {
     /**
      * Transforms a parsed coordinate string into a [lon,lat] coordinate pair.
      */
-    private transformCoordinates(coordinateString: string): number[] {
+    private transformCoordinates(coordinateString: string): CoordLike {
         try {
             // convert to coordinates pair that parser can understand
-            const formatLatitude = function (coord) {
+            const formatLatitude = function (coord: string): string {
                 // split coordinate into parts
                 coord = coord.trim();
                 // handle latitudes
@@ -727,7 +729,7 @@ export class AirspaceConverter {
 
                 return `${deg}:${min}:${sec} ${ordinalDir}`;
             };
-            const formatLongitude = function (coord) {
+            const formatLongitude = function (coord: string): string {
                 // split coordinate into parts
                 coord = coord.trim();
                 // handle latitudes
@@ -740,16 +742,16 @@ export class AirspaceConverter {
             };
 
             const [coordLat, coordLon] = coordinateString.split(' ');
-            let lat = formatLatitude(coordLat);
-            let lon = formatLongitude(coordLon);
+            const lat = formatLatitude(coordLat);
+            const lon = formatLongitude(coordLon);
             const parserCoordinate = `${lat},${lon}`;
             const parser = new CoordinateParser();
             const parsedCoordinate = parser.parse(parserCoordinate.trim());
 
             return [parsedCoordinate.longitude, parsedCoordinate.latitude];
-        } catch (e) {
+        } catch (err) {
             throw new Error(
-                `Failed to transform coordinates '${coordinateString}' for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'`
+                `Failed to transform coordinates '${coordinateString}' for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'. ${err.message}`
             );
         }
     }
@@ -757,198 +759,20 @@ export class AirspaceConverter {
     private fixGeometry(geometry: GeoJSON.Polygon): GeoJSON.Polygon {
         let fixedGeometry = geometry;
 
-        const { isValid, isSimple, selfIntersect } = this.validateGeometry(geometry);
+        const isValid = this._geojsonValidator.isValid(geometry);
         // IMPORTANT only run if required since process will slightly change the original airspace by creating a buffer
         //  which will lead to an increase of polygon coordinates
-        if (!isValid || !isSimple || selfIntersect) {
+        if (isValid === false) {
             try {
-                fixedGeometry = this.createFixedPolygon(geometry.coordinates[0]);
-            } catch (e) {
+                fixedGeometry = this._geojsonValidator.makeValid(geometry);
+            } catch (err) {
                 throw new Error(
-                    `Failed to create fixed geometry for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'. ${e.message}`
+                    `Failed to create fixed geometry for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'. ${err.message}`
                 );
             }
         }
 
         return fixedGeometry;
-    }
-
-    /**
-     * Tries to create a valid Polygon geometry without any self-intersections and holes from the input coordinates.
-     * This does ALTER the geometry and will return a new and valid geometry instead. Depending on the size of self-intersections,
-     * holes and other errors, the returned geometry may differ A LOT from the original one!
-     */
-    private createFixedPolygon(coordinates: number[][]): GeoJSON.Polygon {
-        // prepare "raw" coordinates first before creating a polygon feature
-        coordinates = this.removeDuplicates(coordinates);
-
-        // use "any" as the type of the variable changes due to different filters applied
-        let polygon: any = undefined;
-        try {
-            coordinates = this.removeOverlapPoints(coordinates);
-            const linestring = createLineString(coordinates);
-            polygon = lineToPolygon(linestring);
-            polygon = unkinkPolygon(polygon);
-            // use the largest polygon in collection as the main polygon - assumed is that all kinks are smaller in size
-            // and neglectable
-            const getPolygon = function (features) {
-                let polygon = null;
-                let polygonArea = null;
-                for (const feature of features) {
-                    const area = getArea(feature);
-
-                    if (area >= polygonArea) {
-                        polygonArea = area;
-                        polygon = feature;
-                    }
-                }
-
-                return polygon;
-            };
-            polygon = getPolygon(polygon.features);
-
-            return polygon.geometry;
-        } catch (e) {
-            /*
-            Use "envelope" on edge cases that cannot be fixed with above logic. Resulting geometry will be
-            completely changed but area enclosed by original airspace will be enclosed also. In case of single, dual point
-            invalid polygons, this will at least return a valid geometry though it will differ the most from the original one.
-             */
-            try {
-                const pointFeatures = [];
-                for (const coord of coordinates) {
-                    pointFeatures.push(createPoint(coord));
-                }
-                return envelope(createFeatureCollection(pointFeatures)).geometry;
-            } catch (e) {
-                throw new Error(e.message);
-            }
-        }
-    }
-
-    /**
-     * @param {Object} geometry
-     * @return {{isValid: boolean, isSimple: boolean, selfIntersect: (Object|null)}}
-     * @private
-     */
-    private validateGeometry(geometry) {
-        // validate airspace geometry
-        let isValid = this.isValid(geometry);
-        let isSimple = this.isSimple(geometry);
-        const selfIntersect = this.getSelfIntersections(geometry);
-
-        return { isValid, isSimple, selfIntersect };
-    }
-
-    /**
-     * @param {Object} polygonGeometry
-     * @return {boolean}
-     * @private
-     */
-    private isValid(polygonGeometry) {
-        const reader = new jsts.io.GeoJSONReader();
-        const jstsGeometry = reader.read(polygonGeometry);
-        const isValidValidator = new jsts.operation.valid.IsValidOp(jstsGeometry);
-
-        return isValidValidator.isValid();
-    }
-
-    /**
-     * @param {Object} polygonGeometry
-     * @return {boolean}
-     * @private
-     */
-    private isSimple(polygonGeometry) {
-        const reader = new jsts.io.GeoJSONReader();
-        const jstsGeometry = reader.read(polygonGeometry);
-        const isSimpleValidator = new jsts.operation.IsSimpleOp(jstsGeometry);
-
-        return isSimpleValidator.isSimple();
-    }
-
-    /**
-     * @param {Object} polygonGeometry
-     * @return {Object|null}
-     * @private
-     */
-    private getSelfIntersections(polygonGeometry) {
-        const reader = new jsts.io.GeoJSONReader();
-        const jstsGeometry = reader.read(polygonGeometry);
-
-        // if the geometry is already a simple linear ring, do not
-        // try to find self intersection points.
-        if (jstsGeometry) {
-            const validator = new jsts.operation.IsSimpleOp(jstsGeometry);
-            if (validator.isSimpleLinearGeometry(jstsGeometry)) {
-                return;
-            }
-
-            let res = {};
-            const graph = new jsts.geomgraph.GeometryGraph(0, jstsGeometry);
-            const cat = new jsts.operation.valid.ConsistentAreaTester(graph);
-            const r = cat.isNodeConsistentArea();
-            if (!r) {
-                res = cat.getInvalidPoint();
-            }
-            return res;
-        }
-    }
-
-    /**
-     * Removes high proximity coordinates, i.e. removes coordinate if another coordinate is within 10 meters.
-     *
-     * @params {Array[]} coordinates
-     * @returns {Array[]}
-     * @private
-     */
-    private removeDuplicates(coordinates) {
-        const processed = [];
-        for (const coord of coordinates) {
-            const exists = processed.find((value) => {
-                return distance(value, coord, { units: 'kilometers' }) < 0.001;
-            });
-
-            if (exists === undefined) {
-                processed.push(coord);
-            }
-        }
-
-        return processed;
-    }
-
-    /**
-     * Takes a list of coordinates and moves along all points and checks whether the traversed
-     * path would form an overlapping line.
-     *
-     * @param {Array[]} coordinates
-     * @return {Array[]}
-     */
-    private removeOverlapPoints(coordinates) {
-        const fixedPoints = [];
-        let lastBearing = null;
-
-        coordinates.forEach((coord, index) => {
-            // get bearing to next point
-            const nextPoint = coordinates[index + 1];
-            let nextBearing = null;
-            // calc bearing to next point if any, otherwise add last point and exit
-            if (nextPoint) {
-                nextBearing = parseInt(calcBearing(coord, nextPoint));
-            } else {
-                fixedPoints.push(coord);
-                return;
-            }
-            // always use 360 instead of 0
-            nextBearing = nextBearing === 0 ? 360 : nextBearing;
-            // if next bearing is exactly the opposite direction, we found an overlapping part of the line string
-            const oppBearing = parseInt(nextBearing > 360 && nextBearing < 180 ? nextBearing + 180 : nextBearing - 180);
-            if (lastBearing == null || oppBearing !== lastBearing) {
-                fixedPoints.push(coord);
-                lastBearing = nextBearing;
-            }
-        });
-
-        return fixedPoints;
     }
 
     private reset() {
