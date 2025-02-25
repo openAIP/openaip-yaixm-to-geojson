@@ -16,7 +16,7 @@ airspace:
       type: CTA
       class: D
       geometry:
-          - seqno: 1
+          - seq: 1
             upper: FL115
             lower: 1500 ft
             boundary:
@@ -29,7 +29,7 @@ airspace:
                       radius: 10 nm
                       centre: 571834N 0021602W
                       to: 572153N 0015835W
-          - seqno: 2
+          - seq: 2
             upper: FL115
             lower: 1500 ft
             boundary:
@@ -48,7 +48,7 @@ airspace:
                       radius: 10 nm
                       centre: 571207N 0021152W
                       to: 571522N 0015428W
-          - seqno: 3
+          - seq: 3
             upper: FL115
             lower: 3000 ft
             boundary:
@@ -74,7 +74,7 @@ airspace:
       type: CTA
       class: E
       geometry:
-          - seqno: 1
+          - seq: 1
             class: E
             rules:
                 - TMZ
@@ -89,7 +89,7 @@ airspace:
                       - 555356N 0045343W
                       - 555825N 0051042W
                       - 560939N 0055411W
-          - seqno: 2
+          - seq: 2
             rules:
                 - TMZ
             upper: FL195
@@ -104,7 +104,7 @@ airspace:
                       - 563408N 0064847W
                       - 562552N 0061508W
                       - 564248N 0063539W
-          - seqno: 3
+          - seq: 3
             rules:
                 - TMZ
             upper: FL195
