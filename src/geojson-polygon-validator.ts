@@ -10,8 +10,12 @@ import {
     unkinkPolygon,
 } from '@turf/turf';
 import type { Feature, Point } from 'geojson';
-// @ts-expect-error - JSTS is not typed
-import jsts from 'jsts';
+import GeometryFactory from 'jsts/org/locationtech/jts/geom/GeometryFactory.js';
+import GeoJSONReader from 'jsts/org/locationtech/jts/io/GeoJSONReader.js';
+import IsSimpleOp from 'jsts/org/locationtech/jts/operation/IsSimpleOp.js';
+import IsValidOp from 'jsts/org/locationtech/jts/operation/valid/IsValidOp.js';
+import GeometryGraph from 'jsts/org/locationtech/jts/geomgraph/GeometryGraph.js';
+import ConsistentAreaTester from 'jsts/org/locationtech/jts/operation/valid/ConsistentAreaTester.js';
 import { z } from 'zod';
 import { validateSchema } from './validate-schema.js';
 
@@ -38,6 +42,13 @@ const RemoveIntermediatePointsConfigSchema = z
  * Validates GeoJSON polygons.
  */
 export class GeojsonPolygonValidator {
+    private _geojsonReader: GeoJSONReader;
+
+    constructor() {
+        const geomFactory = new GeometryFactory();
+        this._geojsonReader = new GeoJSONReader(geomFactory);
+    }
+
     /**
      * Checks if a given GeoJSON geometry is valid.
      */
@@ -186,10 +197,8 @@ export class GeojsonPolygonValidator {
     isValidPolygon(polygonGeometry: GeoJSON.Polygon): boolean {
         validateSchema(polygonGeometry, GeoJsonPolygonSchema, { assert: true, name: 'polygonGeometry' });
 
-        const reader = new jsts.io.GeoJSONReader();
-        const jstsGeometry = reader.read(polygonGeometry);
-
-        const isValidValidator = new jsts.operation.valid.IsValidOp(jstsGeometry);
+        const jstsGeometry = this._geojsonReader.read(polygonGeometry);
+        const isValidValidator = new IsValidOp(jstsGeometry);
 
         return isValidValidator.isValid();
     }
@@ -197,9 +206,8 @@ export class GeojsonPolygonValidator {
     isSimple(polygonGeometry: GeoJSON.Polygon): boolean {
         validateSchema(polygonGeometry, GeoJsonPolygonSchema, { assert: true, name: 'polygonGeometry' });
 
-        const reader = new jsts.io.GeoJSONReader();
-        const jstsGeometry = reader.read(polygonGeometry);
-        const isSimpleValidator = new jsts.operation.IsSimpleOp(jstsGeometry);
+        const jstsGeometry = this._geojsonReader.read(polygonGeometry);
+        const isSimpleValidator = new IsSimpleOp(jstsGeometry);
 
         return isSimpleValidator.isSimple();
     }
@@ -207,20 +215,18 @@ export class GeojsonPolygonValidator {
     getSelfIntersections(polygonGeometry: GeoJSON.Polygon): object | undefined {
         validateSchema(polygonGeometry, GeoJsonPolygonSchema, { assert: true, name: 'polygonGeometry' });
 
-        const reader = new jsts.io.GeoJSONReader();
-        const jstsGeometry = reader.read(polygonGeometry);
-
+        const jstsGeometry = this._geojsonReader.read(polygonGeometry);
         // if the geometry is already a simple linear ring, do not
         // try to find self intersection points.
         if (jstsGeometry) {
-            const validator = new jsts.operation.IsSimpleOp(jstsGeometry);
+            const validator = new IsSimpleOp(jstsGeometry);
             if (validator.isSimpleLinearGeometry(jstsGeometry)) {
                 return undefined;
             }
 
             let res = {};
-            const graph = new jsts.geomgraph.GeometryGraph(0, jstsGeometry);
-            const cat = new jsts.operation.valid.ConsistentAreaTester(graph);
+            const graph = new GeometryGraph(0, jstsGeometry);
+            const cat = new ConsistentAreaTester(graph);
             const r = cat.isNodeConsistentArea();
             if (r === false) {
                 res = cat.getInvalidPoint();
