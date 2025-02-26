@@ -73,7 +73,6 @@ export type ConvertOptions = {
 };
 
 type YaixmService = { callsign: string; controls: string; frequency: string };
-type YaixmServices = { service: YaixmService[] };
 
 type YaixmAirspaceBoundaryLine = {
     line: string[];
@@ -185,10 +184,24 @@ export class AirspaceConverter {
 
         const yaixm = YAML.parse(buffer.toString('utf-8'));
         // build options for createAirspaceFeatures
-        const createOptions: Partial<{ services: any }> = {};
+        const createOptions: { services: YaixmService[] } = {
+            services: [],
+        };
         if (serviceFileBuffer != null) {
             // if services are given, use them as options and try to read them from file
-            createOptions.services = await YAML.parse(serviceFileBuffer.toString());
+            const service = await YAML.parse(serviceFileBuffer.toString());
+            // parser will return frequency as floats which will remove the trailing zeros- we have convert
+            // to "frequency formatted" string e.g. "123.000"
+            for (const serviceItem of service.service) {
+                // convert to string format
+                const frequency = serviceItem.frequency.toString();
+                // make sure we have the correct format which means padding with zeros if necessary
+                const frequencyParts = frequency.split('.');
+                const frequencyDecimal = frequencyParts[1] || '000';
+                const frequencyFormatted = `${frequencyParts[0]}.${frequencyDecimal.padEnd(3, '0')}`;
+                serviceItem.frequency = frequencyFormatted;
+                createOptions.services.push(serviceItem as YaixmService);
+            }
         }
         const geojsonFeatures: GeoJsonAirspaceFeature[] = [];
         for (const airspace of yaixm.airspace) {
@@ -225,7 +238,7 @@ export class AirspaceConverter {
 
     private async createAirspaceFeatures(
         airspaceJson: YaixmAirspace,
-        options: { services?: YaixmServices }
+        options: { services?: YaixmService[] }
     ): Promise<GeoJsonAirspaceFeature[]> {
         const { services } = options;
         const features: GeoJsonAirspaceFeature[] = [];
@@ -240,14 +253,12 @@ export class AirspaceConverter {
                 upper,
                 lower,
                 boundary,
-                id: sequenceId,
                 class: sequenceClass,
                 rules: sequenceRules,
             } = geometryDefinition;
             // set sequence number for error messages, use "0" if no sequence number is defined
             this._sequenceNumber = seq || 0;
 
-            const airspaceId = sequenceId || id;
             const airspaceName = this.buildAirspaceName(name, seq);
             const airspaceClass = sequenceClass || baseClass;
             const airspaceRules = sequenceRules || baseRules;
@@ -311,11 +322,11 @@ export class AirspaceConverter {
      */
     private async createGroundServiceProperty(
         id: string,
-        services: YaixmServices
+        services: YaixmService[]
     ): Promise<Omit<YaixmService, 'controls'> | null> {
         try {
             // read services file
-            for (const service of services.service) {
+            for (const service of services) {
                 const { callsign, controls, frequency } = service;
                 // airspace "id" is mapped to "controls"" in services file
                 if (controls?.includes(id)) {

@@ -30,7 +30,7 @@ describe(
                             activity: 'NONE',
                             groundService: {
                                 callsign: 'FARNBOROUGH RADAR',
-                                frequency: '133.44',
+                                frequency: '133.440',
                             },
                         },
                         geometry: {
@@ -66,7 +66,7 @@ describe(
                             activity: 'NONE',
                             groundService: {
                                 callsign: 'FARNBOROUGH RADAR',
-                                frequency: '133.44',
+                                frequency: '133.440',
                             },
                         },
                         geometry: {
@@ -202,7 +202,7 @@ describe(
                             activity: 'NONE',
                             groundService: {
                                 callsign: 'FARNBOROUGH RADAR',
-                                frequency: '133.44',
+                                frequency: '133.440',
                             },
                         },
                         geometry: {
@@ -337,7 +337,7 @@ describe(
                             activity: 'NONE',
                             groundService: {
                                 callsign: 'FARNBOROUGH RADAR',
-                                frequency: '133.44',
+                                frequency: '133.440',
                             },
                         },
                         geometry: {
@@ -376,7 +376,7 @@ describe(
                             activity: 'NONE',
                             groundService: {
                                 callsign: 'FARNBOROUGH RADAR',
-                                frequency: '133.44',
+                                frequency: '133.440',
                             },
                         },
                         geometry: {
@@ -411,7 +411,7 @@ describe(
                             activity: 'NONE',
                             groundService: {
                                 callsign: 'FARNBOROUGH RADAR',
-                                frequency: '133.44',
+                                frequency: '133.440',
                             },
                         },
                         geometry: {
@@ -447,7 +447,7 @@ describe(
                             activity: 'NONE',
                             groundService: {
                                 callsign: 'FARNBOROUGH RADAR',
-                                frequency: '133.44',
+                                frequency: '133.440',
                             },
                         },
                         geometry: {
@@ -484,7 +484,7 @@ describe(
                             remarks: 'TMZ',
                             groundService: {
                                 callsign: 'FARNBOROUGH RADAR',
-                                frequency: '133.44',
+                                frequency: '133.440',
                             },
                         },
                         geometry: {
@@ -523,7 +523,7 @@ describe(
                             remarks: 'TMZ',
                             groundService: {
                                 callsign: 'FARNBOROUGH RADAR',
-                                frequency: '133.44',
+                                frequency: '133.440',
                             },
                         },
                         geometry: {
