@@ -66,9 +66,9 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.AUTOMATOR_DEVOPS_PAT }}
               with:
-                  major-wording: "#build-major"
-                  minor-wording: "#build-minor"
-                  patch-wording: "#build-patch"
+                  major-wording: "#publish-major"
+                  minor-wording: "#publish-minor"
+                  patch-wording: "#publish-patch"
                   # use "patch" as default bump strategy
                   default: patch
                   tag-prefix: "v"
