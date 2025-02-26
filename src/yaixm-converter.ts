@@ -123,7 +123,7 @@ export class YaixmConverter {
         this.reset();
 
         const converter = this.getConverter(type);
-        this._geojson = await converter.convert(buffer, { servicesFileBufferr });
+        this._geojson = await converter.convert(buffer, { servicesFileBuffer });
     }
 
     toGeojson(): GeoJSON.FeatureCollection<Polygon, GeoJsonAirspaceFeatureProperties> | undefined {
