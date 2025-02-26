@@ -48,7 +48,7 @@ export type ConvertFromFileConfig = {
 export const ConvertFromBufferConfigSchema = z
     .object({
         type: z.string(),
-        serviceFileBuffer: z.instanceof(Buffer).optional(),
+        servicesFileBuffer: z.instanceof(Buffer).optional(),
     })
     .strict()
     .describe('ConvertFromBufferConfigSchema');
@@ -58,7 +58,7 @@ export type ConvertFromBufferConfig = {
     type: string;
     // Buffer of a "service.yaml" file. If given, tries to read services from file if type is "airspace".
     // If successful, this will map radio services to airspaces. If not given, services are not read.
-    serviceFileBuffer?: Buffer;
+    servicesFileBuffer?: Buffer;
 };
 
 /**
@@ -107,10 +107,23 @@ export class YaixmConverter {
         const buffer = fs.readFileSync(inputFilepath);
         const convertFromBufferConfig: ConvertFromBufferConfig = { type };
         if (serviceFilePath != null) {
-            convertFromBufferConfig.serviceFileBuffer = fs.readFileSync(inputFilepath);
+            convertFromBufferConfig.servicesFileBuffer = fs.readFileSync(inputFilepath);
         }
 
         return this.convertFromBuffer(buffer, convertFromBufferConfig);
+    }
+
+    async convertFromBuffer(buffer: Buffer, config: ConvertFromBufferConfig): Promise<void> {
+        validateSchema(buffer, z.instanceof(Buffer), { assert: true, name: 'buffer' });
+        validateSchema(config, ConvertFromBufferConfigSchema, { assert: true, name: 'ConvertFromBufferConfig' });
+
+        const { type, servicesFileBuffer } = config;
+
+        // reset internal state
+        this.reset();
+
+        const converter = this.getConverter(type);
+        this._geojson = await converter.convert(buffer, { servicesFileBufferr });
     }
 
     toGeojson(): GeoJSON.FeatureCollection<Polygon, GeoJsonAirspaceFeatureProperties> | undefined {
@@ -135,19 +148,6 @@ export class YaixmConverter {
         } catch (err) {
             throw new Error(`Error writing file '${outputFilepath}': ${err.message}`);
         }
-    }
-
-    private async convertFromBuffer(buffer: Buffer, config: ConvertFromBufferConfig): Promise<void> {
-        validateSchema(buffer, z.instanceof(Buffer), { assert: true, name: 'buffer' });
-        validateSchema(config, ConvertFromBufferConfigSchema, { assert: true, name: 'ConvertFromBufferConfig' });
-
-        const { type, serviceFileBuffer } = config;
-
-        // reset internal state
-        this.reset();
-
-        const converter = this.getConverter(type);
-        this._geojson = await converter.convert(buffer, { serviceFileBuffer });
     }
 
     /**

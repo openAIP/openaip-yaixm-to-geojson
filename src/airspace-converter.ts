@@ -61,7 +61,7 @@ export type Config = {
 
 export const ConvertOptionsSchema = z
     .object({
-        serviceFileBuffer: z.instanceof(Buffer).optional(),
+        servicesFileBuffer: z.instanceof(Buffer).optional(),
     })
     .strict()
     .describe('ConvertOptionsSchema');
@@ -69,7 +69,7 @@ export const ConvertOptionsSchema = z
 export type ConvertOptions = {
     // Buffer of a "service.yaml" file. If given, tries to read services from file if type is "airspace".
     // If not given, services are not read.
-    serviceFileBuffer?: Buffer;
+    servicesFileBuffer?: Buffer;
 };
 
 type YaixmService = { callsign: string; controls: string; frequency: string };
@@ -182,14 +182,14 @@ export class AirspaceConverter {
         // reset internal state
         this.reset();
 
-        const { serviceFileBuffer } = options;
+        const { servicesFileBuffer } = options;
 
         const yaixm = YAML.parse(buffer.toString('utf-8'));
         // build options for createAirspaceFeatures
         const createOptions: Partial<{ services: any }> = {};
-        if (serviceFileBuffer != null) {
+        if (servicesFileBuffer != null) {
             // if services are given, use them as options and try to read them from file
-            createOptions.services = await YAML.parse(serviceFileBuffer.toString());
+            createOptions.services = await YAML.parse(servicesFileBuffer.toString());
         }
         const geojsonFeatures: GeoJsonAirspaceFeature[] = [];
         for (const airspace of yaixm.airspace) {
