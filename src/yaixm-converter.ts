@@ -48,7 +48,7 @@ export type ConvertFromFileConfig = {
 export const ConvertFromBufferConfigSchema = z
     .object({
         type: z.string(),
-        servicesFileBuffer: z.instanceof(Buffer).optional(),
+        serviceFileBuffer: z.instanceof(Buffer).optional(),
     })
     .strict()
     .describe('ConvertFromBufferConfigSchema');
@@ -58,7 +58,7 @@ export type ConvertFromBufferConfig = {
     type: string;
     // Buffer of a "service.yaml" file. If given, tries to read services from file if type is "airspace".
     // If successful, this will map radio services to airspaces. If not given, services are not read.
-    servicesFileBuffer?: Buffer;
+    serviceFileBuffer?: Buffer;
 };
 
 /**
@@ -98,7 +98,7 @@ export class YaixmConverter {
             throw new Error(`File '${inputFilepath}' does not exist`);
         }
         if (serviceFilePath != null) {
-            const existsServiceFile = fs.existsSync(inputFilepath);
+            const existsServiceFile = fs.existsSync(serviceFilePath);
             if (existsServiceFile === false) {
                 throw new Error(`File '${serviceFilePath}' does not exist`);
             }
@@ -107,7 +107,7 @@ export class YaixmConverter {
         const buffer = fs.readFileSync(inputFilepath);
         const convertFromBufferConfig: ConvertFromBufferConfig = { type };
         if (serviceFilePath != null) {
-            convertFromBufferConfig.servicesFileBuffer = fs.readFileSync(inputFilepath);
+            convertFromBufferConfig.serviceFileBuffer = fs.readFileSync(serviceFilePath);
         }
 
         return this.convertFromBuffer(buffer, convertFromBufferConfig);
@@ -117,13 +117,13 @@ export class YaixmConverter {
         validateSchema(buffer, z.instanceof(Buffer), { assert: true, name: 'buffer' });
         validateSchema(config, ConvertFromBufferConfigSchema, { assert: true, name: 'ConvertFromBufferConfig' });
 
-        const { type, servicesFileBuffer } = config;
+        const { type, serviceFileBuffer } = config;
 
         // reset internal state
         this.reset();
 
         const converter = this.getConverter(type);
-        this._geojson = await converter.convert(buffer, { servicesFileBuffer });
+        this._geojson = await converter.convert(buffer, { serviceFileBuffer });
     }
 
     toGeojson(): GeoJSON.FeatureCollection<Polygon, GeoJsonAirspaceFeatureProperties> | undefined {

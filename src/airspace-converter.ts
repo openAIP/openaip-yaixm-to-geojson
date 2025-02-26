@@ -18,10 +18,10 @@ import type { AnyValidateFunction } from 'ajv/dist/core.js';
 import type { FeatureCollection } from 'geojson';
 import YAML from 'yaml';
 import { z } from 'zod';
-import GEOJSON_SCHEMA from './schemas/geojson-schema.json';
 import { cleanObject } from './clean-object.js';
 import DEFAULT_CONFIG from './default-config.js';
 import { GeojsonPolygonValidator } from './geojson-polygon-validator.js';
+import GEOJSON_SCHEMA from './schemas/geojson-schema.json';
 import type { CoordLike, GeoJsonAirspaceFeature, GeoJsonAirspaceFeatureProperties } from './types.js';
 import { validateSchema } from './validate-schema.js';
 
@@ -61,7 +61,7 @@ export type Config = {
 
 export const ConvertOptionsSchema = z
     .object({
-        servicesFileBuffer: z.instanceof(Buffer).optional(),
+        serviceFileBuffer: z.instanceof(Buffer).optional(),
     })
     .strict()
     .describe('ConvertOptionsSchema');
@@ -69,11 +69,11 @@ export const ConvertOptionsSchema = z
 export type ConvertOptions = {
     // Buffer of a "service.yaml" file. If given, tries to read services from file if type is "airspace".
     // If not given, services are not read.
-    servicesFileBuffer?: Buffer;
+    serviceFileBuffer?: Buffer;
 };
 
 type YaixmService = { callsign: string; controls: string; frequency: string };
-type YaixmServices = { airspace: YaixmService[] };
+type YaixmServices = { service: YaixmService[] };
 
 type YaixmAirspaceBoundaryLine = {
     line: string[];
@@ -175,21 +175,20 @@ export class AirspaceConverter {
         buffer: Buffer,
         options: ConvertOptions
     ): Promise<FeatureCollection<GeoJSON.Polygon, GeoJsonAirspaceFeatureProperties>> {
-        // IMPROVE set actual properties for returned type
         validateSchema(buffer, z.instanceof(Buffer), { assert: true, name: 'Buffer' });
         validateSchema(options, ConvertOptionsSchema, { assert: true, name: 'ConvertOptions' });
 
         // reset internal state
         this.reset();
 
-        const { servicesFileBuffer } = options;
+        const { serviceFileBuffer } = options;
 
         const yaixm = YAML.parse(buffer.toString('utf-8'));
         // build options for createAirspaceFeatures
         const createOptions: Partial<{ services: any }> = {};
-        if (servicesFileBuffer != null) {
+        if (serviceFileBuffer != null) {
             // if services are given, use them as options and try to read them from file
-            createOptions.services = await YAML.parse(servicesFileBuffer.toString());
+            createOptions.services = await YAML.parse(serviceFileBuffer.toString());
         }
         const geojsonFeatures: GeoJsonAirspaceFeature[] = [];
         for (const airspace of yaixm.airspace) {
@@ -216,15 +215,12 @@ export class AirspaceConverter {
         return geojson;
     }
 
-    private buildAirspaceName(name: string, id: string): string {
-        if (id == null) {
+    private buildAirspaceName(name: string, seq?: number): string {
+        if (seq == null) {
             return name;
         }
 
-        // replace "-" with " " and all to upper case
-        const idParts = id.split('-').map((part) => part.toUpperCase());
-
-        return `${idParts.join(' ')}`;
+        return `${name} ${seq}`;
     }
 
     private async createAirspaceFeatures(
@@ -252,7 +248,7 @@ export class AirspaceConverter {
             this._sequenceNumber = seq || 0;
 
             const airspaceId = sequenceId || id;
-            const airspaceName = this.buildAirspaceName(name, airspaceId);
+            const airspaceName = this.buildAirspaceName(name, seq);
             const airspaceClass = sequenceClass || baseClass;
             const airspaceRules = sequenceRules || baseRules;
             // map to only type/class combination
@@ -319,7 +315,7 @@ export class AirspaceConverter {
     ): Promise<Omit<YaixmService, 'controls'> | null> {
         try {
             // read services file
-            for (const service of services.airspace) {
+            for (const service of services.service) {
                 const { callsign, controls, frequency } = service;
                 // airspace "id" is mapped to "controls"" in services file
                 if (controls?.includes(id)) {

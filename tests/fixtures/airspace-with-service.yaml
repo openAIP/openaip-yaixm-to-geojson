@@ -1,0 +1,104 @@
+airspace:
+    - name: FARNBOROUGH CTA
+      id: farnborough-cta
+      type: CTA
+      class: D
+      geometry:
+          - seq: 1
+            upper: 2500 ft
+            lower: 2000 ft
+            boundary:
+                - line:
+                      - 512014N 0003104W
+                      - 511741N 0002927W
+                      - 511520N 0003639W
+                      - 512013N 0003800W
+          - seq: 2
+            upper: 5500 ft
+            lower: 1500 ft
+            boundary:
+                - line:
+                      - 511035N 0005054W
+                      - 511101N 0005355W
+                      - 511535N 0005748W
+                - arc:
+                      dir: cw
+                      radius: 4.7168 nm
+                      centre: 511256N 0005136W
+                      to: 511705N 0005508W
+          - seq: 3
+            upper: 5500 ft
+            lower: 2000 ft
+            boundary:
+                - line:
+                      - 511101N 0005355W
+                      - 511143N 0005851W
+                - arc:
+                      dir: cw
+                      radius: 4.7168 nm
+                      centre: 511256N 0005136W
+                      to: 511535N 0005748W
+          - seq: 4
+            upper: 3500 ft
+            lower: 2500 ft
+            boundary:
+                - line:
+                      - 511520N 0003639W
+                      - 511014N 0003325W
+                      - 510832N 0004055W
+                      - 510632N 0003937W
+                      - 510449N 0004709W
+                      - 510652N 0004829W
+                      - 511035N 0005054W
+          - seq: 5
+            upper: 4500 ft
+            lower: 2500 ft
+            boundary:
+                - line:
+                      - 510652N 0004829W
+                      - 510449N 0004709W
+                      - 510602N 0005439W
+          - seq: 6
+            upper: 5500 ft
+            lower: 2500 ft
+            boundary:
+                - line:
+                      - 511143N 0005851W
+                      - 511035N 0005054W
+                      - 510652N 0004829W
+                      - 510602N 0005439W
+          - seq: 7
+            upper: 4500 ft
+            lower: 3500 ft
+            boundary:
+                - line:
+                      - 510533N 0005140W
+                      - 510449N 0004709W
+                      - 510047N 0004433W
+                      - 510047N 0005251W
+          - seq: 8
+            class: E
+            rules:
+                - TMZ
+            upper: 5500 ft
+            lower: 4500 ft
+            boundary:
+                - line:
+                      - 510957N 0005732W
+                      - 510602N 0005439W
+                      - 510047N 0005251W
+                      - 505435N 0010335W
+                      - 510420N 0010657W
+                      - 510636N 0010817W
+          - seq: 9
+            class: E
+            rules:
+                - TMZ
+            upper: FL65
+            lower: 5500 ft
+            boundary:
+                - line:
+                      - 505739N 0004104W
+                      - 505119N 0003419W
+                      - 505119N 0005457W
+                      - 505512N 0005908W
