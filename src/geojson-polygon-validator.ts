@@ -42,7 +42,7 @@ const RemoveIntermediatePointsConfigSchema = z
  * Validates GeoJSON polygons.
  */
 export class GeojsonPolygonValidator {
-    private _geojsonReader: GeoJSONReader;
+    private _geojsonReader: any;
 
     constructor() {
         const geomFactory = new GeometryFactory();
