@@ -10,11 +10,17 @@ import {
     unkinkPolygon,
 } from '@turf/turf';
 import type { Feature, Point } from 'geojson';
+// @ts-expect-error - JSTS is not typed
 import GeometryFactory from 'jsts/org/locationtech/jts/geom/GeometryFactory.js';
+// @ts-expect-error - JSTS is not typed
 import GeoJSONReader from 'jsts/org/locationtech/jts/io/GeoJSONReader.js';
+// @ts-expect-error - JSTS is not typed
 import IsSimpleOp from 'jsts/org/locationtech/jts/operation/IsSimpleOp.js';
+// @ts-expect-error - JSTS is not typed
 import IsValidOp from 'jsts/org/locationtech/jts/operation/valid/IsValidOp.js';
+// @ts-expect-error - JSTS is not typed
 import GeometryGraph from 'jsts/org/locationtech/jts/geomgraph/GeometryGraph.js';
+// @ts-expect-error - JSTS is not typed
 import ConsistentAreaTester from 'jsts/org/locationtech/jts/operation/valid/ConsistentAreaTester.js';
 import { z } from 'zod';
 import { validateSchema } from './validate-schema.js';
