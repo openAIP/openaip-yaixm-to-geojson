@@ -67,7 +67,6 @@
         "ajv-errors": "^3.0.0",
         "ajv-formats": "^3.0.1",
         "ajv-keywords": "^5.1.0",
-        "jsts": "2.12.1",
         "yaml": "^2.7.0",
         "zod": "^3.24.2"
     },

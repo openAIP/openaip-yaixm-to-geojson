@@ -266,10 +266,10 @@ export class AirspaceConverter {
             let geometry = this.createPolygonGeometry(boundary);
 
             if (this._fixGeometries) {
-                geometry = await this.fixGeometry(geometry);
+                geometry = this.fixGeometry(geometry);
             }
             if (this._validateGeometries) {
-                await geojsonValidator.validate(geometry);
+                geojsonValidator.validate(geometry);
             }
 
             const featureProperties: Partial<GeoJsonAirspaceFeatureProperties> = {
@@ -813,16 +813,16 @@ export class AirspaceConverter {
         }
     }
 
-    private async fixGeometry(geometry: GeoJSON.Polygon): Promise<GeoJSON.Polygon> {
+    private fixGeometry(geometry: GeoJSON.Polygon): GeoJSON.Polygon {
         let fixedGeometry = geometry;
         const geojsonValidator = new GeojsonPolygonValidator();
 
-        const isValid = await geojsonValidator.isValid(geometry);
+        const isValid = geojsonValidator.isValid(geometry);
         // IMPORTANT only run if required since process will slightly change the original airspace by creating a buffer
         //  which will lead to an increase of polygon coordinates
         if (isValid === false) {
             try {
-                fixedGeometry = await geojsonValidator.makeValid(geometry);
+                fixedGeometry = geojsonValidator.makeValid(geometry);
             } catch (err) {
                 throw new Error(
                     `Failed to create fixed geometry for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'. ${err.message}`
