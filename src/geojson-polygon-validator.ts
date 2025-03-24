@@ -10,11 +10,7 @@ import {
     unkinkPolygon,
 } from '@turf/turf';
 import type { Feature, Point } from 'geojson';
-import GeometryFactory from 'jsts/org/locationtech/jts/geom/GeometryFactory.js';
-import GeoJSONReader from 'jsts/org/locationtech/jts/io/GeoJSONReader.js';
-import IsSimpleOp from 'jsts/org/locationtech/jts/operation/IsSimpleOp.js';
-import IsValidOp from 'jsts/org/locationtech/jts/operation/valid/IsValidOp.js';
-import GeometryGraph from 'jsts/org/locationtech/jts/geomgraph/GeometryGraph.js';
+import type GeoJSONReader from 'jsts/org/locationtech/jts/io/GeoJSONReader.js';
 import ConsistentAreaTester from 'jsts/org/locationtech/jts/operation/valid/ConsistentAreaTester.js';
 import { z } from 'zod';
 import { validateSchema } from './validate-schema.js';
@@ -42,21 +38,14 @@ const RemoveIntermediatePointsConfigSchema = z
  * Validates GeoJSON polygons.
  */
 export class GeojsonPolygonValidator {
-    private _geojsonReader: any;
-
-    constructor() {
-        const geomFactory = new GeometryFactory();
-        this._geojsonReader = new GeoJSONReader(geomFactory);
-    }
-
     /**
      * Checks if a given GeoJSON geometry is valid.
      */
-    isValid(polygonGeometry: GeoJSON.Polygon): boolean {
+    async isValid(polygonGeometry: GeoJSON.Polygon): Promise<boolean> {
         validateSchema(polygonGeometry, GeoJsonPolygonSchema, { assert: true, name: 'polygonGeometry' });
 
         try {
-            this.validate(polygonGeometry);
+            await this.validate(polygonGeometry);
             return true;
         } catch (err) {
             return false;
@@ -66,7 +55,7 @@ export class GeojsonPolygonValidator {
     /**
      * Validates a given GeoJSON geometry. Throws an error if not valid.
      */
-    validate(polygonGeometry: GeoJSON.Polygon): void {
+    async validate(polygonGeometry: GeoJSON.Polygon): Promise<void> {
         validateSchema(polygonGeometry, GeoJsonPolygonSchema, { assert: true, name: 'polygonGeometry' });
 
         const { coordinates } = this.extractGeometry(polygonGeometry);
@@ -74,9 +63,9 @@ export class GeojsonPolygonValidator {
         const linestringFeature = createLinestring(coordinates);
         const polygonFeature = lineToPolygon(linestringFeature);
 
-        const isValid = this.isValidPolygon(polygonFeature.geometry as GeoJSON.Polygon);
-        const isSimple = this.isSimple(polygonFeature.geometry as GeoJSON.Polygon);
-        const selfIntersect = this.getSelfIntersections(polygonFeature.geometry as GeoJSON.Polygon);
+        const isValid = await this.isValidPolygon(polygonFeature.geometry as GeoJSON.Polygon);
+        const isSimple = await this.isSimple(polygonFeature.geometry as GeoJSON.Polygon);
+        const selfIntersect = await this.getSelfIntersections(polygonFeature.geometry as GeoJSON.Polygon);
 
         if (isValid === false || isSimple === false || selfIntersect) {
             if (selfIntersect) {
@@ -89,10 +78,10 @@ export class GeojsonPolygonValidator {
     /**
      * Tries to fix a given GeoJSON geometry if it is invalid.
      */
-    makeValid(polygonGeometry: GeoJSON.Polygon): GeoJSON.Polygon {
+    async makeValid(polygonGeometry: GeoJSON.Polygon): Promise<GeoJSON.Polygon> {
         validateSchema(polygonGeometry, GeoJsonPolygonSchema, { assert: true, name: 'polygonGeometry' });
 
-        if (this.isValidPolygon(polygonGeometry)) {
+        if (await this.isValidPolygon(polygonGeometry)) {
             return polygonGeometry;
         }
         const { coordinates } = this.extractGeometry(polygonGeometry);
@@ -194,28 +183,44 @@ export class GeojsonPolygonValidator {
         }
     }
 
-    isValidPolygon(polygonGeometry: GeoJSON.Polygon): boolean {
+    private async getGeoJsonReader(): Promise<GeoJSONReader> {
+        const { default: GeometryFactory } = await import('jsts/org/locationtech/jts/geom/GeometryFactory.js');
+        const { default: GeoJSONReader } = await import('jsts/org/locationtech/jts/io/GeoJSONReader.js');
+
+        return new GeoJSONReader(new GeometryFactory());
+    }
+
+    async isValidPolygon(polygonGeometry: GeoJSON.Polygon): Promise<boolean> {
         validateSchema(polygonGeometry, GeoJsonPolygonSchema, { assert: true, name: 'polygonGeometry' });
 
-        const jstsGeometry = this._geojsonReader.read(polygonGeometry);
+        const { default: IsValidOp } = await import('jsts/org/locationtech/jts/operation/valid/IsValidOp.js');
+        const geojsonReader = await this.getGeoJsonReader();
+        const jstsGeometry = geojsonReader.read(polygonGeometry);
+
         const isValidValidator = new IsValidOp(jstsGeometry);
 
         return isValidValidator.isValid();
     }
 
-    isSimple(polygonGeometry: GeoJSON.Polygon): boolean {
+    async isSimple(polygonGeometry: GeoJSON.Polygon): Promise<boolean> {
         validateSchema(polygonGeometry, GeoJsonPolygonSchema, { assert: true, name: 'polygonGeometry' });
 
-        const jstsGeometry = this._geojsonReader.read(polygonGeometry);
+        const { default: IsSimpleOp } = await import('jsts/org/locationtech/jts/operation/IsSimpleOp.js');
+        const geojsonReader = await this.getGeoJsonReader();
+        const jstsGeometry = geojsonReader.read(polygonGeometry);
         const isSimpleValidator = new IsSimpleOp(jstsGeometry);
 
         return isSimpleValidator.isSimple();
     }
 
-    getSelfIntersections(polygonGeometry: GeoJSON.Polygon): object | undefined {
+    async getSelfIntersections(polygonGeometry: GeoJSON.Polygon): Promise<object | undefined> {
         validateSchema(polygonGeometry, GeoJsonPolygonSchema, { assert: true, name: 'polygonGeometry' });
 
-        const jstsGeometry = this._geojsonReader.read(polygonGeometry);
+        const { default: IsSimpleOp } = await import('jsts/org/locationtech/jts/operation/IsSimpleOp.js');
+        const { default: GeometryGraph } = await import('jsts/org/locationtech/jts/geomgraph/GeometryGraph.js');
+        const geojsonReader = await this.getGeoJsonReader();
+
+        const jstsGeometry = geojsonReader.read(polygonGeometry);
         // if the geometry is already a simple linear ring, do not
         // try to find self intersection points.
         if (jstsGeometry) {
