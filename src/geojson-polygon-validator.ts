@@ -11,7 +11,6 @@ import {
 } from '@turf/turf';
 import type { Feature, Point } from 'geojson';
 import type GeoJSONReader from 'jsts/org/locationtech/jts/io/GeoJSONReader.js';
-import ConsistentAreaTester from 'jsts/org/locationtech/jts/operation/valid/ConsistentAreaTester.js';
 import { z } from 'zod';
 import { validateSchema } from './validate-schema.js';
 
@@ -218,6 +217,8 @@ export class GeojsonPolygonValidator {
 
         const { default: IsSimpleOp } = await import('jsts/org/locationtech/jts/operation/IsSimpleOp.js');
         const { default: GeometryGraph } = await import('jsts/org/locationtech/jts/geomgraph/GeometryGraph.js');
+        const { default: ConsistentAreaTester } = await import('jsts/org/locationtech/jts/operation/valid/ConsistentAreaTester.js');
+
         const geojsonReader = await this.getGeoJsonReader();
 
         const jstsGeometry = geojsonReader.read(polygonGeometry);
