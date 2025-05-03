@@ -9,4 +9,4 @@ dist/
 .eslintcache
 .DS_Store
 .history/
-var/
+var/airspace.geojson
