@@ -1,5 +1,3 @@
-// @ts-expect-error - not typed
-import rewind from '@mapbox/geojson-rewind';
 import { Parser as CoordinateParser } from '@openaip/coordinate-parser';
 import {
     bearing as calcBearing,
@@ -9,13 +7,14 @@ import {
     lineString as createLineString,
     point as createPoint,
     lineToPolygon,
+    rewind,
 } from '@turf/turf';
 import ajvErrors from 'ajv-errors';
 import addFormats from 'ajv-formats';
 import ajvKeywords from 'ajv-keywords';
 import Ajv from 'ajv/dist/2020';
 import type { AnyValidateFunction } from 'ajv/dist/core.js';
-import type { FeatureCollection } from 'geojson';
+import { Polygon, type Feature, type FeatureCollection } from 'geojson';
 import YAML from 'yaml';
 import { z } from 'zod';
 import { cleanObject } from './clean-object.js';
@@ -583,15 +582,13 @@ export class AirspaceConverter {
         const lineString = createLineString(this._boundaryCoordinates);
         // create polygon geometry from LineString geometry using turfjs
         // add first coordinate pair to end of list to close the polygon if first and last item do not match
-        let polygonFeature = lineToPolygon(lineString, { autoComplete: true, mutate: true, orderCoords: true });
+        let polygonFeature = lineToPolygon(lineString, {
+            autoComplete: true,
+            mutate: true,
+            orderCoords: true,
+        });
         // make sure the polygon follows the right-hand rule
-        polygonFeature = rewind(polygonFeature, false);
-        // if we have a multi-polygon, error out
-        if (polygonFeature.geometry.type === 'MultiPolygon') {
-            throw new Error(
-                `Invalid polygon geometry for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'. MultiPolygon geometries are not supported.`
-            );
-        }
+        polygonFeature = rewind(polygonFeature, { reverse: false }) as Feature<Polygon>;
 
         return polygonFeature.geometry;
     }
