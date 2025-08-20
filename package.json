@@ -17,15 +17,21 @@
             "role": "Lead developer"
         }
     ],
-    "main": "./dist/cjs/index.js",
-    "module": "./dist/esm/index.js",
-    "types": "./dist/types/index.d.ts",
+    "type": "module",
+    "main": "./dist/cjs/index.cjs",
+    "module": "./dist/esm/index.mjs",
+    "types": "./dist/esm/index.d.mts",
     "exports": {
         "./package.json": "./package.json",
         ".": {
-            "types": "./dist/types/index.d.ts",
-            "import": "./dist/esm/index.js",
-            "require": "./dist/cjs/index.js"
+            "import": {
+                "types": "./dist/esm/index.d.mts",
+                "default": "./dist/esm/index.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/index.d.cts",
+                "default": "./dist/cjs/index.cjs"
+            }
         }
     },
     "files": [
@@ -44,8 +50,8 @@
     },
     "homepage": "https://github.com/openAIP/openaip-yaixm-to-geojson#readme",
     "scripts": {
-        "build:cjs": "tsc -p tsconfig.cjs.json",
-        "build:esm": "tsc -p tsconfig.esm.json && npm run rename:esm",
+        "build:cjs": "tsc -p tsconfig.cjs.json && mv ./dist/cjs/index.js ./dist/cjs/index.cjs && mv ./dist/cjs/index.d.ts ./dist/cjs/index.d.cts",
+        "build:esm": "tsc -p tsconfig.esm.json && mv ./dist/esm/index.js ./dist/esm/index.mjs && mv ./dist/esm/index.d.ts ./dist/esm/index.d.mts",
         "build": "npm run clean && npm run build:cjs && npm run build:esm",
         "clean": "rimraf dist",
         "rename:esm": "/bin/bash ./prepare-esm.sh",
