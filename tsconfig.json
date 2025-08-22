@@ -3,21 +3,23 @@
         "lib": [
             "esnext"
         ],
-        "strict": true,
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
         "esModuleInterop": true,
+        "strict": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "useUnknownInCatchVariables": false,
-        "moduleResolution": "node",
-        "baseUrl": ".",
+        "noImplicitAny": true,
+        "noUnusedParameters": false,
         "rootDir": "./src",
-        "resolveJsonModule": true,
+        "baseUrl": ".",
     },
     "include": [
         "src"
     ],
     "exclude": [
         "dist",
-        "node_modules",
+        "node_modules"
     ]
 }
