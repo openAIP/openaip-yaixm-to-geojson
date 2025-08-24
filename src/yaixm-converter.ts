@@ -146,7 +146,11 @@ export class YaixmConverter {
             const buffer = Buffer.from(JSON.stringify(this._geojson, null, 2), 'utf-8');
             fs.writeFileSync(outputFilepath, buffer);
         } catch (err) {
-            throw new Error(`Error writing file '${outputFilepath}': ${err.message}`);
+            let errorMessage = 'Unknown error occured';
+            if (err instanceof Error) {
+                errorMessage = err.message;
+            }
+            throw new Error(`Error writing file '${outputFilepath}': ${errorMessage}`);
         }
     }
 

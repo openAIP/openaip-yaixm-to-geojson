@@ -1,1 +1,1 @@
-export { YaixmConverter } from './yaixm-converter';
+export { YaixmConverter } from './yaixm-converter.js';

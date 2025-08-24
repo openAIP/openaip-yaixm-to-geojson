@@ -31,7 +31,12 @@ program
     try {
         await converter.convertFromFile(options.inputFilePath, { type });
         await converter.toGeojsonFile(options.outputFilepath);
-    } catch (e) {
-        console.log(e.message);
+    } catch (err) {
+        let errorMessage = 'Unknown error occured';
+        if (err instanceof Error) {
+            errorMessage = err.message;
+        }
+        console.log(errorMessage);
+        process.exit(1);
     }
 })();

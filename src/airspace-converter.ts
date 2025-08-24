@@ -331,7 +331,11 @@ export class AirspaceConverter {
 
             return null;
         } catch (err) {
-            console.log(`WARN: Failed to map ground station services. ${err.message}`);
+            let errorMessage = 'Unknown error occured';
+            if (err instanceof Error) {
+                errorMessage = err.message;
+            }
+            console.log(`WARN: Failed to map ground station services. ${errorMessage}`);
 
             return null;
         }
@@ -804,8 +808,12 @@ export class AirspaceConverter {
 
             return [parsedCoordinate.longitude, parsedCoordinate.latitude];
         } catch (err) {
+            let errorMessage = 'Unknown error occured';
+            if (err instanceof Error) {
+                errorMessage = err.message;
+            }
             throw new Error(
-                `Failed to transform coordinates '${coordinateString}' for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'. ${err.message}`
+                `Failed to transform coordinates '${coordinateString}' for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'. ${errorMessage}`
             );
         }
     }
@@ -821,8 +829,12 @@ export class AirspaceConverter {
             try {
                 fixedGeometry = geojsonValidator.makeValid(geometry);
             } catch (err) {
+                let errorMessage = 'Unknown error occured';
+                if (err instanceof Error) {
+                    errorMessage = err.message;
+                }
                 throw new Error(
-                    `Failed to create fixed geometry for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'. ${err.message}`
+                    `Failed to create fixed geometry for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'. ${errorMessage}`
                 );
             }
         }
