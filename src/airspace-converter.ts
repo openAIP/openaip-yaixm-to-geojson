@@ -10,9 +10,7 @@ import {
     rewind,
 } from '@turf/turf';
 import ajvErrors from 'ajv-errors';
-import addFormats from 'ajv-formats';
-import ajvKeywords from 'ajv-keywords';
-import Ajv from 'ajv/dist/2020';
+import { Ajv2020 } from 'ajv/dist/2020.js';
 import type { AnyValidateFunction } from 'ajv/dist/core.js';
 import { Polygon, type Feature, type FeatureCollection } from 'geojson';
 import YAML from 'yaml';
@@ -20,9 +18,11 @@ import { z } from 'zod';
 import { cleanObject } from './clean-object.js';
 import DEFAULT_CONFIG from './default-config.js';
 import { GeojsonPolygonValidator } from './geojson-polygon-validator.js';
-import GEOJSON_SCHEMA from './schemas/geojson-schema.json';
+import GEOJSON_SCHEMA from './schemas/geojson-schema.json' with { type: 'json' };
 import type { CoordLike, GeoJsonAirspaceFeature, GeoJsonAirspaceFeatureProperties } from './types.js';
 import { validateSchema } from './validate-schema.js';
+
+const AjvErrors = ajvErrors.default;
 
 const ALLOWED_TYPES = ['CTA', 'TMA', 'CTR', 'ATZ', 'OTHER', 'D', 'P', 'R', 'D_OTHER'];
 const ALLOWED_LOCALTYPES = ['MATZ', 'GLIDER', 'GVS', 'HIRTA', 'LASER', 'DZ', 'NOATZ', 'UL', 'ILS', 'RMZ', 'TMZ'];
@@ -143,19 +143,20 @@ export class AirspaceConverter {
         this._strictSchemaValidation = strictSchemaValidation;
         this._validateGeometries = validateGeometries;
 
-        const ajvParser = new Ajv({
-            // nullable: true,
+        const ajvParser = new Ajv2020({
             verbose: true,
             allErrors: true,
+            code: { esm: true },
+            // use no keywords at all
+            keywords: [],
+            // nullable: true,
             // jsonPointers: true,
         });
         // set all used formats
-        addFormats(ajvParser, ['date-time', 'date']);
-        // set all used keywords
-        ajvKeywords(ajvParser, []);
+        ajvParser.addFormat('date-time', 'date');
         // add unknown keywords that would otherwise result in an exception
         ajvParser.addVocabulary(['example']);
-        ajvErrors(ajvParser);
+        AjvErrors(ajvParser);
         // add schema
         ajvParser.validateSchema(GEOJSON_SCHEMA);
         ajvParser.addSchema(GEOJSON_SCHEMA);
