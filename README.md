@@ -358,11 +358,13 @@ Outputs a GeoJSON FeatureCollection with the following JSON schema:
 npm install -g @openaip/yaixm-to-geojson
 ```
 
-# Node
+#### ESM only package
+
+This is an ESM only package that requires Node 22 thus allowing CommonJS consumers to `require` it if necessary.
+
+# Usage
 
 ```javascript
-// with CommonJS (CJS) syntax
-const { YaixmConverter } = require('@openaip/yaixm-to-geojson');
 // ECMAScript Modules (ESM) syntax
 import { YaixmConverter} from '@openaip/yaixm-to-geojson';
 
