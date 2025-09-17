@@ -64,11 +64,11 @@ export type ConvertFromBufferConfig = {
  * Converts a YAIXM file to GeoJSON file.
  */
 export class YaixmConverter {
-    private _validateGeometries: boolean;
-    private _fixGeometries: boolean;
-    private _geometryDetail: number;
-    private _strictSchemaValidation: boolean;
-    private _geojson: FeatureCollection<Polygon, GeoJsonAirspaceFeatureProperties> | undefined;
+    private validateGeometries: boolean;
+    private fixGeometries: boolean;
+    private geometryDetail: number;
+    private strictSchemaValidation: boolean;
+    private geojson: FeatureCollection<Polygon, GeoJsonAirspaceFeatureProperties> | undefined;
 
     constructor(config: Config) {
         validateSchema(config, ConfigSchema, { assert: true, name: 'Config' });
@@ -78,10 +78,10 @@ export class YaixmConverter {
             ...config,
         };
 
-        this._fixGeometries = fixGeometries;
-        this._geometryDetail = geometryDetail;
-        this._strictSchemaValidation = strictSchemaValidation;
-        this._validateGeometries = validateGeometries;
+        this.fixGeometries = fixGeometries;
+        this.geometryDetail = geometryDetail;
+        this.strictSchemaValidation = strictSchemaValidation;
+        this.validateGeometries = validateGeometries;
     }
 
     async convertFromFile(inputFilepath: string, config: ConvertFromFileConfig): Promise<void> {
@@ -122,11 +122,11 @@ export class YaixmConverter {
         this.reset();
 
         const converter = this.getConverter(type);
-        this._geojson = await converter.convert(buffer, { serviceFileBuffer });
+        this.geojson = await converter.convert(buffer, { serviceFileBuffer });
     }
 
     toGeojson(): GeoJSON.FeatureCollection<Polygon, GeoJsonAirspaceFeatureProperties> | undefined {
-        return this._geojson;
+        return this.geojson;
     }
 
     /**
@@ -137,12 +137,12 @@ export class YaixmConverter {
         validateSchema(outputFilepath, z.string(), { assert: true, name: 'outputFilepath' });
 
         // handle edge case if no geojson data is available
-        if (this._geojson == null) {
+        if (this.geojson == null) {
             throw new Error('No GeoJSON data to write to file');
         }
         try {
             // write geojson to file at outputFilepath
-            const buffer = Buffer.from(JSON.stringify(this._geojson, null, 2), 'utf-8');
+            const buffer = Buffer.from(JSON.stringify(this.geojson, null, 2), 'utf-8');
             fs.writeFileSync(outputFilepath, buffer);
         } catch (err) {
             let errorMessage = 'Unknown error occured';
@@ -160,10 +160,10 @@ export class YaixmConverter {
         switch (type) {
             case 'airspace':
                 return new AirspaceConverter({
-                    validateGeometries: this._validateGeometries,
-                    fixGeometries: this._fixGeometries,
-                    geometryDetail: this._geometryDetail,
-                    strictSchemaValidation: this._strictSchemaValidation,
+                    validateGeometries: this.validateGeometries,
+                    fixGeometries: this.fixGeometries,
+                    geometryDetail: this.geometryDetail,
+                    strictSchemaValidation: this.strictSchemaValidation,
                 });
             default:
                 throw new Error(`Unknown type '${type}'`);
@@ -171,6 +171,6 @@ export class YaixmConverter {
     }
 
     private reset(): void {
-        this._geojson = undefined;
+        this.geojson = undefined;
     }
 }

@@ -119,16 +119,16 @@ type YaixmAirspace = {
 };
 
 export class AirspaceConverter {
-    private _validateGeometries: boolean;
-    private _fixGeometries: boolean;
-    private _geometryDetail: number;
-    private _strictSchemaValidation: boolean;
-    private _schemaValidator: AnyValidateFunction;
+    private validateGeometries: boolean;
+    private fixGeometries: boolean;
+    private geometryDetail: number;
+    private strictSchemaValidation: boolean;
+    private schemaValidator: AnyValidateFunction;
     // used in error messages to better identify the airspace that caused the error
-    private _identifier: string | undefined;
-    private _sequenceNumber: number | undefined;
+    private identifier: string | undefined;
+    private sequenceNumber: number | undefined;
     // keep track of all calculated coordinates for the currently processed airspace boundary
-    private _boundaryCoordinates: number[][] = [];
+    private boundaryCoordinates: number[][] = [];
 
     constructor(config: Config) {
         validateSchema(config, ConfigSchema, { assert: true, name: 'Name' });
@@ -138,10 +138,10 @@ export class AirspaceConverter {
             ...config,
         };
 
-        this._fixGeometries = fixGeometries;
-        this._geometryDetail = geometryDetail;
-        this._strictSchemaValidation = strictSchemaValidation;
-        this._validateGeometries = validateGeometries;
+        this.fixGeometries = fixGeometries;
+        this.geometryDetail = geometryDetail;
+        this.strictSchemaValidation = strictSchemaValidation;
+        this.validateGeometries = validateGeometries;
 
         const ajvParser = new Ajv2020({
             verbose: true,
@@ -160,7 +160,7 @@ export class AirspaceConverter {
         // add schema
         ajvParser.validateSchema(GEOJSON_SCHEMA);
         ajvParser.addSchema(GEOJSON_SCHEMA);
-        this._schemaValidator = ajvParser.getSchema(
+        this.schemaValidator = ajvParser.getSchema(
             'https://adhoc-schemas.openaip.net/schemas/parsed-yaixm-airspace.json'
         ) as AnyValidateFunction;
     }
@@ -212,11 +212,11 @@ export class AirspaceConverter {
         }
 
         const geojson = createFeatureCollection(geojsonFeatures);
-        const valid = this._schemaValidator(geojson);
+        const valid = this.schemaValidator(geojson);
         if (valid === false) {
-            if (this._strictSchemaValidation) {
+            if (this.strictSchemaValidation) {
                 throw new Error(
-                    `GeoJSON does not adhere to underlying schema. ${JSON.stringify(this._schemaValidator.errors)}`
+                    `GeoJSON does not adhere to underlying schema. ${JSON.stringify(this.schemaValidator.errors)}`
                 );
             } else {
                 console.log('WARN: GeoJSON does not adhere to underlying schema.');
@@ -244,13 +244,13 @@ export class AirspaceConverter {
         const geojsonValidator = new GeojsonPolygonValidator();
 
         // set identifier for error messages
-        this._identifier = name as string;
+        this.identifier = name as string;
 
         // for each airspace geometry defined in YAIXM block, create a GeoJSON feature
         for (const geometryDefinition of geometry) {
             const { seq, upper, lower, boundary, class: sequenceClass, rules: sequenceRules } = geometryDefinition;
             // set sequence number for error messages, use "0" if no sequence number is defined
-            this._sequenceNumber = seq || 0;
+            this.sequenceNumber = seq || 0;
 
             const airspaceName = this.buildAirspaceName(name, seq);
             const airspaceClass = sequenceClass || baseClass;
@@ -265,10 +265,10 @@ export class AirspaceConverter {
             const lowerCeiling = this.createCeiling(lower);
             let geometry = this.createPolygonGeometry(boundary);
 
-            if (this._fixGeometries) {
+            if (this.fixGeometries) {
                 geometry = this.fixGeometry(geometry);
             }
-            if (this._validateGeometries) {
+            if (this.validateGeometries) {
                 geojsonValidator.validate(geometry);
             }
 
@@ -348,7 +348,7 @@ export class AirspaceConverter {
         airspaceClass: string,
         airspaceRules: string[]
     ): { type: string; class: string; metaProps?: { activity: string } } {
-        const message = `Failed to map class/type combination for airspace '${this._identifier}'.`;
+        const message = `Failed to map class/type combination for airspace '${this.identifier}'.`;
         // check type is allowed
         if (ALLOWED_TYPES.includes(type) === false) {
             throw new Error(`${message} The 'type' value '${type}' is not in the list of allowed types.`);
@@ -517,7 +517,7 @@ export class AirspaceConverter {
             isValidSurfaceDefinition === false
         ) {
             throw new Error(
-                `Invalid ceiling definition '${ceilingDefinition}' for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'`
+                `Invalid ceiling definition '${ceilingDefinition}' for airspace '${this.identifier}' in sequence number '${this.sequenceNumber}'`
             );
         }
 
@@ -545,7 +545,7 @@ export class AirspaceConverter {
         }
 
         throw new Error(
-            `Invalid ceiling definition '${ceilingDefinition}' for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'`
+            `Invalid ceiling definition '${ceilingDefinition}' for airspace '${this.identifier}' in sequence number '${this.sequenceNumber}'`
         );
     }
 
@@ -562,29 +562,29 @@ export class AirspaceConverter {
             switch (boundaryType) {
                 case 'line': {
                     const coordinates = this.createCoordinatesFromLine(boundaryDefinition as YaixmAirspaceBoundaryLine);
-                    this._boundaryCoordinates.push(...coordinates);
+                    this.boundaryCoordinates.push(...coordinates);
                     break;
                 }
                 case 'arc': {
                     const coordinates = this.createCoordinatesFromArc(boundaryDefinition as YaixmAirspaceBoundaryArc);
-                    this._boundaryCoordinates.push(...coordinates);
+                    this.boundaryCoordinates.push(...coordinates);
                     break;
                 }
                 case 'circle': {
                     const coordinates = this.createCoordinatesFromCircle(
                         boundaryDefinition as YaixmAirspaceBoundaryCircle
                     );
-                    this._boundaryCoordinates.push(...coordinates);
+                    this.boundaryCoordinates.push(...coordinates);
                     break;
                 }
                 default:
                     throw new Error(
-                        `Unsupported boundary type '${boundaryType}' for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'`
+                        `Unsupported boundary type '${boundaryType}' for airspace '${this.identifier}' in sequence number '${this.sequenceNumber}'`
                     );
             }
         }
 
-        const lineString = createLineString(this._boundaryCoordinates);
+        const lineString = createLineString(this.boundaryCoordinates);
         // create polygon geometry from LineString geometry using turfjs
         // add first coordinate pair to end of list to close the polygon if first and last item do not match
         let polygonFeature = lineToPolygon(lineString, {
@@ -607,8 +607,8 @@ export class AirspaceConverter {
         if (Array.isArray(coordinates) === false || coordinates.length === 0) {
             throw new Error(
                 `Invalid line boundary definition '${JSON.stringify(boundaryDefinition)}' for airspace '${
-                    this._identifier
-                }' in sequence number '${this._sequenceNumber}'`
+                    this.identifier
+                }' in sequence number '${this.sequenceNumber}'`
             );
         }
         const coords: CoordLike[] = [];
@@ -618,7 +618,7 @@ export class AirspaceConverter {
                 throw new Error(
                     `Invalid coordinate '${coordinate}' in line boundary definition '${JSON.stringify(
                         boundaryDefinition
-                    )}' for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'`
+                    )}' for airspace '${this.identifier}' in sequence number '${this.sequenceNumber}'`
                 );
             }
             const coord: CoordLike = this.transformCoordinates(coordinate);
@@ -639,7 +639,7 @@ export class AirspaceConverter {
     private createCoordinatesFromArc(boundaryDefinition: YaixmAirspaceBoundaryArc): number[][] {
         const { dir, radius, centre, to } = boundaryDefinition.arc;
         // get last coordinates pair from boundary coordinates
-        const lastCoord = this._boundaryCoordinates[this._boundaryCoordinates.length - 1];
+        const lastCoord = this.boundaryCoordinates[this.boundaryCoordinates.length - 1];
 
         const isValidDir = REGEX_ARC_DIR.test(dir);
         const isValidRadius = REGEX_ARC_RADIUS.test(radius);
@@ -649,43 +649,43 @@ export class AirspaceConverter {
         if (lastCoord == null) {
             throw new Error(
                 `Invalid arc boundary definition '${JSON.stringify(boundaryDefinition)}' for airspace '${
-                    this._identifier
-                }' in sequence number '${this._sequenceNumber}'. Previous coordinate pair is missing.`
+                    this.identifier
+                }' in sequence number '${this.sequenceNumber}'. Previous coordinate pair is missing.`
             );
         }
         if (dir == null || radius == null || centre == null || to == null) {
             throw new Error(
                 `Invalid arc boundary definition '${JSON.stringify(boundaryDefinition)}' for airspace '${
-                    this._identifier
-                }' in sequence number '${this._sequenceNumber}'`
+                    this.identifier
+                }' in sequence number '${this.sequenceNumber}'`
             );
         }
         if (isValidDir === false) {
             throw new Error(
                 `Invalid arc 'direction' '${dir}' in arc boundary definition '${JSON.stringify(
                     boundaryDefinition
-                )}' for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'`
+                )}' for airspace '${this.identifier}' in sequence number '${this.sequenceNumber}'`
             );
         }
         if (isValidRadius === false) {
             throw new Error(
                 `Invalid arc 'radius' '${radius}' in arc boundary definition '${JSON.stringify(
                     boundaryDefinition
-                )}' for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'`
+                )}' for airspace '${this.identifier}' in sequence number '${this.sequenceNumber}'`
             );
         }
         if (isValidCentre === false) {
             throw new Error(
                 `Invalid arc 'centre' '${centre}' in arc boundary definition '${JSON.stringify(
                     boundaryDefinition
-                )}' for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'`
+                )}' for airspace '${this.identifier}' in sequence number '${this.sequenceNumber}'`
             );
         }
         if (isValidTo === false) {
             throw new Error(
                 `Invalid arc 'to' '${to}' in arc boundary definition '${JSON.stringify(
                     boundaryDefinition
-                )}' for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'`
+                )}' for airspace '${this.identifier}' in sequence number '${this.sequenceNumber}'`
             );
         }
 
@@ -715,7 +715,7 @@ export class AirspaceConverter {
         const endBearing = calcBearing(centerPoint, endPoint);
         // create arc linestring feature
         const arc = createArc(centerPoint, radiusKm, startBearing, endBearing, {
-            steps: this._geometryDetail,
+            steps: this.geometryDetail,
             units: 'kilometers',
         });
 
@@ -736,22 +736,22 @@ export class AirspaceConverter {
         if (radius == null || centre == null) {
             throw new Error(
                 `Invalid arc boundary definition '${JSON.stringify(boundaryDefinition)}' for airspace '${
-                    this._identifier
-                }' in sequence number '${this._sequenceNumber}'`
+                    this.identifier
+                }' in sequence number '${this.sequenceNumber}'`
             );
         }
         if (isValidRadius === false) {
             throw new Error(
                 `Invalid arc 'radius' '${radius}' in arc boundary definition '${JSON.stringify(
                     boundaryDefinition
-                )}' for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'`
+                )}' for airspace '${this.identifier}' in sequence number '${this.sequenceNumber}'`
             );
         }
         if (isValidCentre === false) {
             throw new Error(
                 `Invalid arc 'centre' '${centre}' in arc boundary definition '${JSON.stringify(
                     boundaryDefinition
-                )}' for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'`
+                )}' for airspace '${this.identifier}' in sequence number '${this.sequenceNumber}'`
             );
         }
 
@@ -763,7 +763,7 @@ export class AirspaceConverter {
         const centerPoint = createPoint([centerLon, centerLat]);
 
         const { geometry } = createCircle(centerPoint, radiusKm, {
-            steps: this._geometryDetail,
+            steps: this.geometryDetail,
             units: 'kilometers',
         });
         const [coordinates] = geometry.coordinates;
@@ -814,7 +814,7 @@ export class AirspaceConverter {
                 errorMessage = err.message;
             }
             throw new Error(
-                `Failed to transform coordinates '${coordinateString}' for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'. ${errorMessage}`
+                `Failed to transform coordinates '${coordinateString}' for airspace '${this.identifier}' in sequence number '${this.sequenceNumber}'. ${errorMessage}`
             );
         }
     }
@@ -835,7 +835,7 @@ export class AirspaceConverter {
                     errorMessage = err.message;
                 }
                 throw new Error(
-                    `Failed to create fixed geometry for airspace '${this._identifier}' in sequence number '${this._sequenceNumber}'. ${errorMessage}`
+                    `Failed to create fixed geometry for airspace '${this.identifier}' in sequence number '${this.sequenceNumber}'. ${errorMessage}`
                 );
             }
         }
@@ -844,8 +844,8 @@ export class AirspaceConverter {
     }
 
     private reset() {
-        this._identifier = undefined;
-        this._sequenceNumber = undefined;
-        this._boundaryCoordinates = [];
+        this.identifier = undefined;
+        this.sequenceNumber = undefined;
+        this.boundaryCoordinates = [];
     }
 }
