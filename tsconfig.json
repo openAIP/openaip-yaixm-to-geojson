@@ -17,6 +17,6 @@
         "declaration": true,
         "declarationDir": "./dist",
         "isolatedModules": true,
-        "resolveJsonModule": true,
+        "resolveJsonModule": true
     }
 }
