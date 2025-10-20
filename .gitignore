@@ -11,3 +11,4 @@ dist/
 .history/
 var/airspace.geojson
 .github/copilot-instructions.md
+tsconfig.tsbuildinfo
