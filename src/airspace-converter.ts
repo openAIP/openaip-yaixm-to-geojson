@@ -9,10 +9,10 @@ import {
     lineToPolygon,
     rewind,
 } from '@turf/turf';
-import ajvErrors from 'ajv-errors';
 import { Ajv2020 } from 'ajv/dist/2020.js';
 import type { AnyValidateFunction } from 'ajv/dist/core.js';
-import { Polygon, type Feature, type FeatureCollection } from 'geojson';
+import ajvErrors from 'ajv-errors';
+import type { Feature, FeatureCollection, Polygon } from 'geojson';
 import YAML from 'yaml';
 import { z } from 'zod';
 import { cleanObject } from './clean-object.js';
@@ -282,7 +282,7 @@ export class AirspaceConverter {
                     activatedByNotam: airspaceRules?.includes('NOTAM') === true,
                     // set default value, will be overwritten by "metaProps" if applicable
                     activity: 'NONE',
-                    remarks: airspaceRules == undefined ? undefined : airspaceRules.join(', '),
+                    remarks: airspaceRules === undefined ? undefined : airspaceRules.join(', '),
                 },
                 // merges updated field value for fields, e.g. "activity"
                 ...metaProps,
@@ -364,7 +364,7 @@ export class AirspaceConverter {
 
         // rules can contain a type value that overwrites the main defined airspace type
         const ruleTypes = ['TMZ', 'TRA', 'RMZ'];
-        if (airspaceRules != null && airspaceRules.some((rule) => ruleTypes.includes(rule))) {
+        if (airspaceRules?.some((rule) => ruleTypes.includes(rule))) {
             const ruleType = airspaceRules.find((rule) => ruleTypes.includes(rule));
             if (ruleType != null) {
                 type = ruleType;
@@ -777,7 +777,7 @@ export class AirspaceConverter {
     private transformCoordinates(coordinateString: string): CoordLike {
         try {
             // convert to coordinates pair that parser can understand
-            const formatLatitude = function (coord: string): string {
+            const formatLatitude = (coord: string): string => {
                 // split coordinate into parts
                 coord = coord.trim();
                 // handle latitudes
@@ -788,7 +788,7 @@ export class AirspaceConverter {
 
                 return `${deg}:${min}:${sec} ${ordinalDir}`;
             };
-            const formatLongitude = function (coord: string): string {
+            const formatLongitude = (coord: string): string => {
                 // split coordinate into parts
                 coord = coord.trim();
                 // handle latitudes
