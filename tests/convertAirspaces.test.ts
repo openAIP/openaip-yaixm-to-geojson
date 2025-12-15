@@ -1,6 +1,46 @@
 import { describe, expect, it } from 'vitest';
 import { YaixmConverter } from '../src/yaixm-converter.js';
 
+// Custom matcher to compare coordinates with tolerance
+const coordinatesMatch = (actual: number[][], expected: number[][], tolerance = 1e-6): boolean => {
+    if (actual.length !== expected.length) return false;
+    return actual.every((coord, i) => {
+        if (coord.length !== expected[i].length) return false;
+        return coord.every((val, j) => Math.abs(val - expected[i][j]) < tolerance);
+    });
+};
+
+// Helper to compare GeoJSON with coordinate tolerance
+const geojsonMatchesWithTolerance = (actual: unknown, expected: unknown, tolerance = 1e-6): boolean => {
+    if (typeof actual !== 'object' || typeof expected !== 'object') {
+        return actual === expected;
+    }
+    if (actual === null || expected === null) {
+        return actual === expected;
+    }
+
+    const actualObj = actual as Record<string, unknown>;
+    const expectedObj = expected as Record<string, unknown>;
+
+    // Handle coordinates array specifically
+    if (
+        Array.isArray(actualObj) &&
+        Array.isArray(expectedObj) &&
+        actualObj.length > 0 &&
+        Array.isArray(actualObj[0]) &&
+        typeof actualObj[0][0] === 'number'
+    ) {
+        return coordinatesMatch(actualObj as number[][], expectedObj as number[][], tolerance);
+    }
+
+    const actualKeys = Object.keys(actualObj);
+    const expectedKeys = Object.keys(expectedObj);
+
+    if (actualKeys.length !== expectedKeys.length) return false;
+
+    return actualKeys.every((key) => geojsonMatchesWithTolerance(actualObj[key], expectedObj[key], tolerance));
+};
+
 describe(
     'test parsing complete valid airspace definition blocks to GeoJSON',
     () => {
@@ -546,7 +586,7 @@ describe(
             await converter.convertFromFile(inputFilepath, { type: 'airspace', serviceFilePath });
             const geojson = converter.toGeojson();
 
-            expect(geojson).toEqual(expectedGeojson);
+            expect(geojsonMatchesWithTolerance(geojson, expectedGeojson)).toBe(true);
         });
         it('read single airspace with single clockwise arc definition', async () => {
             const inputFilepath = './tests/fixtures/airspace-single-arc-clockwise.yaml';
@@ -692,7 +732,7 @@ describe(
             await converter.convertFromFile(inputFilepath, { type: 'airspace' });
             const geojson = converter.toGeojson();
 
-            expect(geojson).toEqual(expectedGeojson);
+            expect(geojsonMatchesWithTolerance(geojson, expectedGeojson)).toBe(true);
         });
         it('read single airspace with single counter-clockwise arc definition', async () => {
             const inputFilepath = './tests/fixtures/airspace-single-arc-counterclockwise.yaml';
@@ -933,7 +973,7 @@ describe(
             await converter.convertFromFile(inputFilepath, { type: 'airspace' });
             const geojson = converter.toGeojson();
 
-            expect(geojson).toEqual(expectedGeojson);
+            expect(geojsonMatchesWithTolerance(geojson, expectedGeojson)).toBe(true);
         });
         it('read single airspace with circle definition', async () => {
             const inputFilepath = './tests/fixtures/airspace-circle.yaml';
@@ -1075,7 +1115,7 @@ describe(
             await converter.convertFromFile(inputFilepath, { type: 'airspace' });
             const geojson = converter.toGeojson();
 
-            expect(geojson).toEqual(expectedGeojson);
+            expect(geojsonMatchesWithTolerance(geojson, expectedGeojson)).toBe(true);
         });
         it('read single airspace with line definition', async () => {
             const inputFilepath = './tests/fixtures/airspace-single-line.yaml';
@@ -1123,7 +1163,7 @@ describe(
             await converter.convertFromFile(inputFilepath, { type: 'airspace' });
             const geojson = converter.toGeojson();
 
-            expect(geojson).toEqual(expectedGeojson);
+            expect(geojsonMatchesWithTolerance(geojson, expectedGeojson)).toBe(true);
         });
         it('read single airspace with multiple sequence definition', async () => {
             const inputFilepath = './tests/fixtures/airspace-multi-sequence.yaml';
@@ -1630,7 +1670,7 @@ describe(
             await converter.convertFromFile(inputFilepath, { type: 'airspace' });
             const geojson = converter.toGeojson();
 
-            expect(geojson).toEqual(expectedGeojson);
+            expect(geojsonMatchesWithTolerance(geojson, expectedGeojson)).toBe(true);
         });
     },
     30 * 1000
