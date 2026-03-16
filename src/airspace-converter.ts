@@ -17,10 +17,10 @@ import YAML from 'yaml';
 import { z } from 'zod';
 import { cleanObject } from './clean-object.js';
 import DEFAULT_CONFIG from './default-config.js';
-import { GeojsonPolygonValidator } from './geojson-polygon-validator.js';
 import GEOJSON_SCHEMA from './schemas/geojson-schema.json' with { type: 'json' };
 import type { CoordLike, GeoJsonAirspaceFeature, GeoJsonAirspaceFeatureProperties } from './types.js';
 import { validateSchema } from './validate-schema.js';
+import { isValid, makeValid } from './geojson-polygon.js';
 
 const AjvErrors = ajvErrors.default;
 
@@ -241,7 +241,6 @@ export class AirspaceConverter {
         const { services } = options;
         const features: GeoJsonAirspaceFeature[] = [];
         const { name, id, type, localtype: localType, class: baseClass, geometry, rules: baseRules } = airspaceJson;
-        const geojsonValidator = new GeojsonPolygonValidator();
 
         // set identifier for error messages
         this.identifier = name as string;
@@ -269,7 +268,7 @@ export class AirspaceConverter {
                 geometry = this.fixGeometry(geometry);
             }
             if (this.validateGeometries) {
-                geojsonValidator.validate(geometry);
+                isValid(geometry);
             }
 
             const featureProperties: Partial<GeoJsonAirspaceFeatureProperties> = {
@@ -821,14 +820,13 @@ export class AirspaceConverter {
 
     private fixGeometry(geometry: GeoJSON.Polygon): GeoJSON.Polygon {
         let fixedGeometry = geometry;
-        const geojsonValidator = new GeojsonPolygonValidator();
 
-        const isValid = geojsonValidator.isValid(geometry);
+        const isValidGeom = isValid(geometry);
         // IMPORTANT only run if required since process will slightly change the original airspace by creating a buffer
         //  which will lead to an increase of polygon coordinates
-        if (isValid === false) {
+        if (isValidGeom === false) {
             try {
-                fixedGeometry = geojsonValidator.makeValid(geometry);
+                fixedGeometry = makeValid(geometry);
             } catch (err) {
                 let errorMessage = 'Unknown error occured';
                 if (err instanceof Error) {

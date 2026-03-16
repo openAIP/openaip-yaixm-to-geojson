@@ -1,0 +1,22 @@
+airspace:
+  - name: LEE-ON-SOLENT
+    id: lee-on-solent-atz
+    type: ATZ
+    geometry:
+      - upper: 2033 ft
+        lower: SFC
+        boundary:
+          - line:
+              - 504810N 0010929W
+          - arc:
+              dir: ccw
+              radius: 2 nm
+              centre: 504857N 0011224W
+              to: 504824N 0010921W
+          - line:
+              - 505049N 0011117W
+          - arc:
+              dir: ccw
+              radius: 2 nm
+              centre: 504857N 0011224W
+              to: 504810N 0010929W
