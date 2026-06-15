@@ -17,10 +17,10 @@ import YAML from 'yaml';
 import { z } from 'zod';
 import { cleanObject } from './clean-object.js';
 import DEFAULT_CONFIG from './default-config.js';
+import { isValid, makeValid } from './geojson-polygon.js';
 import GEOJSON_SCHEMA from './schemas/geojson-schema.json' with { type: 'json' };
 import type { CoordLike, GeoJsonAirspaceFeature, GeoJsonAirspaceFeatureProperties } from './types.js';
 import { validateSchema } from './validate-schema.js';
-import { isValid, makeValid } from './geojson-polygon.js';
 
 const AjvErrors = ajvErrors.default;
 

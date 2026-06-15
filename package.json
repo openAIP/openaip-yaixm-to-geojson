@@ -62,32 +62,29 @@
         "release:patch": "npm version --sign-git-tag patch && git push && git push origin --tags",
         "release:minor": "npm version --sign-git-tag minor && git push && git push origin --tags",
         "release:major": "npm version --sign-git-tag major && git push && git push origin --tags",
-        "run-security-audit": "npm audit --omit=dev fix",
-        "update-packages": "ncu --target minor --upgrade && npm install",
+        "run-security-audit": "npm audit fix --omit=peer",
+        "packages:update": "ncu --target minor --upgrade --cooldown 7d && npm install",
+        "packages:outdated": "npm outdated",
         "depcheck": "npx depcheck --oneline --skip-missing=true --ignore-patterns=dist,coverage,*.log"
     },
     "dependencies": {
-        "@openaip/coordinate-parser": "^0.31.1",
+        "@openaip/coordinate-parser": "^0.32.2",
         "@placemarkio/check-geojson": "^0.1.14",
-        "@turf/turf": "^7.3.4",
-        "ajv": "^8.18.0",
+        "@turf/turf": "^7.3.5",
+        "ajv": "^8.20.0",
         "ajv-errors": "^3.0.0",
-        "yaml": "^2.8.2",
-        "zod": "^3.25.76"
+        "yaml": "^2.9.0",
+        "zod": "^4.4.3"
     },
     "devDependencies": {
-        "@biomejs/biome": "2.4.7",
-        "@types/node": ">=24.12.0",
-        "@vitest/coverage-v8": "^4.1.0",
-        "commander": "^14.0.3",
-        "npm-check-updates": "^19.6.3",
-        "typescript": "^5.9.3",
-        "vite": "^7.3.1",
-        "vitest": "^4.1.0"
+        "@biomejs/biome": "2.5.0",
+        "@types/node": ">=24.13.1",
+        "@vitest/coverage-v8": "^4.1.9",
+        "commander": "^15.0.0",
+        "npm-check-updates": "^22.2.3",
+        "typescript": "^6.0.3",
+        "vite": "^8.0.16",
+        "vitest": "^4.1.9"
     },
-    "comments": {
-        "packages": {
-            "zod": "Version 4 introduces breaking changes!"
-        }
-    }
+    "comments": {}
 }

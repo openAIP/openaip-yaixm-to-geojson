@@ -1,5 +1,6 @@
 .idea/
 .vscode/
+.zed/
 coverage/
 node_modules/
 .env*
